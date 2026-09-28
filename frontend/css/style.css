@@ -28,7 +28,13 @@ header {
 .clock p {
     margin: 5px 0;
 }
-
+nav li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 50px;
+    border: 1px solid gray;
+    border-radius: 20px;
+}
 /* =========================
    GENERAL BUTTONS
 ========================= */
