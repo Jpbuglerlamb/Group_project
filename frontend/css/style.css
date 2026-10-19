@@ -1,259 +1,415 @@
 * {
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+ box-sizing: border-box;
+ font-family: Georgia, serif;
 }
 
 body {
-    margin: 0;
-    background-color: lightgray;
+ margin: 0;
+ background-color: #eee8df;
 }
 
 /* =========================
-   HEADER
+
+   HEADER
+
 ========================= */
+
 
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: start;
+    padding: 20px;
+    gap: 16px;
 }
 
-.clock {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+header h2 {
+    padding: 40px;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+    margin: 0;
+    text-align: center;
+    font-size: 50px;
 }
 
-.clock p {
-    margin: 5px 0;
+header > a,
+header > button {
+    padding: 20px;
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
 }
-nav li {
+header .clock {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+}
+.clock-logo {
+    display: block;
+    width: 170px;
+    height: 180px;
+    overflow: visible;
+}
+.clock-logo .rays line {
+    stroke: #333333;
+    stroke-width: 4;
+    stroke-linecap: round;
+}
+.clock-logo .rays line {
+    animation: tick 8s linear infinite;
+}
+@keyframes tick {
+    0%, 12.49% {
+        opacity: 1;
+    }
+    12.5%, 100% {
+        opacity: 0.2;
+    }
+}
+.clock-logo .rays line:nth-child(1) {
+    animation-delay: 0s;
+}
+.clock-logo .rays line:nth-child(2) {
+    animation-delay: -7s;
+}
+.clock-logo .rays line:nth-child(3) {
+    animation-delay: -6s;
+}
+.clock-logo .rays line:nth-child(4) {
+    animation-delay: -5s;
+}
+.clock-logo .rays line:nth-child(5) {
+    animation-delay: -4s;
+}
+.clock-logo .rays line:nth-child(6) {
+    animation-delay: -3s;
+}
+.clock-logo .rays line:nth-child(7) {
+    animation-delay: -2s;
+}
+.clock-logo .rays line:nth-child(8) {
+    animation-delay: -1s;
+}
+.clock-logo text {
+    fill: #000000;
+}
+#time {
+    font-family: monospace;
+    font-size: 36px;
+    font-weight: bold;
+    margin: 0;
+    color: #000000;
+}
+.date-box {
     display: flex;
-    justify-content: space-between;
-    padding: 10px 50px;
-    border: 1px solid gray;
-    border-radius: 20px;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
+    font-size: 14px;
+}
+#date {
+    background: #e6e3e3;
+    padding: 4px 8px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(91, 79, 79, 0.1);
 }
 /* =========================
-   GENERAL BUTTONS
+
+   GENERAL BUTTONS
+
 ========================= */
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
 
 button {
-    background: linear-gradient(
-        120deg,
-        white 30%,
-        #597faa 100%
-    );
 
-    border: 1px solid black;
-    border-radius: 20px;
-
-    padding: 12px 16px;
-
-    cursor: pointer;
-
-    transition: 0.2s;
+ background: linear-gradient(
+ 120deg,
+ #f5f5f5 100%
+ );
+ border-radius: 20px;
+ padding: 12px 16px;
+ cursor: pointer;
+ transition: 0.2s;
 }
-
 button:hover {
-    transform: scale(1.03);
+ transform: scale(1.03);
 }
-
 /* =========================
-   PAGE TITLE
-========================= */
 
-section {
-    display: flex;
-    justify-content: center;
-}
+   MAIN
 
-section > h2 {
-    margin: 20px 0;
-}
-
-/* =========================
-   MAIN
 ========================= */
 
 main {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
+ max-width: 1200px;
+
+ margin: 0 auto;
+
+ padding: 20px;
+
 }
 
+
+
 /* =========================
-   STUDY PLANNER
+
+   STUDY PLANNER
+
 ========================= */
+
+
 
 .container {
-    display: flex;
-    gap: 20px;
-    width: 100%;
-    min-height: 500px;
+
+ display: flex;
+
+  gap: 20px;
+
+ width: 100%;
+
+ min-height: 500px;
+
 }
+
+
 
 /* =========================
-   SEMESTER
+
+   SEMESTER
+
 ========================= */
 
+
+
 .semester {
-    flex: 2;
 
-    display: flex;
-    flex-direction: column;
+ flex: 2;
 
-    border: 1px solid black;
-    border-radius: 10px;
+ display: flex;
 
-    padding-bottom: 15px;
+ flex-direction: column;
+
+ border: 1px solid #ffff;
+
+ border-radius: 10px;
+
+ padding-bottom: 15px;
+
 }
+
+
 
 .semester h2,
 .classes h2,
 .assessments h2 {
-    text-align: center;
-    margin: 10px 0 20px;
-    padding: 12px;
+
+ text-align: center;
+
+ margin: 10px 0 20px;
+
+ padding: 12px;
+
 }
+
+
 
 .semester button {
-    margin: 5px 10px;
+
+ margin: 5px 10px;
+
 }
+
+
 
 .semester button:hover {
-    transform: translateX(4px);
+
+ transform: translateX(4px);
+
 }
+
+
 
 .semester button.selected {
-    transform: translateX(5px);
 
-    font-weight: 600;
+ transform: translateX(5px);
 
-    border-width: 2px;
-    border-color: lawngreen;
+ font-weight: 600;
+
+ border-width: 2px;
+
+ border-color: #C4BCB0;
+
 }
 
+
+
 /* =========================
-   CLASSES
+
+   CLASSES
+
 ========================= */
+
+
 
 .classes {
-    flex: 3.5;
 
-    display: flex;
-    flex-direction: column;
+ flex: 3.5;
+ display: flex;
+ flex-direction: column;
+ border: 1px solid #ffff;
+ border-radius: 10px;
+ padding-bottom: 15px;
 
-    border: 1px solid black;
-    border-radius: 10px;
-
-    padding-bottom: 15px;
 }
+
+
 
 .class-list {
-    display: flex;
-    flex-direction: column;
+ display: flex;
+ flex-direction: column;
+
 }
+
+
 
 .class-list button {
-    margin: 5px 10px;
+
+ margin: 5px 10px;
+
 }
+
+
 
 .class-list button:hover {
-    transform: translateX(4px);
+
+ transform: translateX(4px);
+
 }
 
-/* =========================
-   ASSESSMENTS
-========================= */
 
-.assessment-card {
-    flex: 4.5;
+.semester {
+    background: linear-gradient(to bottom, #d3d2d2);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
 
-    display: flex;
+.classes {
+    background: linear-gradient(to bottom, #c4d8e5);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 .assessments {
-    width: 100%;
-
-    display: flex;
-    flex-direction: column;
-
-    border: 1px solid black;
-    border-radius: 10px;
-
-    padding-bottom: 15px;
+    background: linear-gradient(to bottom, #f6d8d6);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
+/* =========================
+
+   ASSESSMENTS
+
+========================= */
+
+
+
+.assessment-card {
+
+ flex: 4.5;
+ display: flex;
+
+}
+
+
+
+.assessments {
+
+ width: 100%;
+ display: flex;
+
+ flex-direction: column;
+ border: 1px solid #ffff;
+ border-radius: 10px;
+ padding-bottom: 15px;
+
+}
+
+
 
 .assessment-item {
-    border: 1px solid black;
-    border-radius: 20px;
-
-    padding: 15px;
-    margin: 0 10px 15px;
-
-    background: linear-gradient(
-        120deg,
-        white 30%,
-        #597faa 100%
-    );
+ border: 1px solid #ffff;
+ border-radius: 20px;
+ padding: 15px;
+ margin: 0 10px 15px;
+ background: linear-gradient(
+ 120deg,
+ white 30%,
+ #597faa 100%
+ );
 }
-
 .assessment-item h3 {
-    margin-top: 0;
+ margin-top: 0;
+}
+.assessment-item p {
+ margin: 8px 0;
 }
 
-.assessment-item p {
-    margin: 8px 0;
-}
+
 
 /* =========================
-   PROGRESS BAR
+
+   PROGRESS BAR
+
 ========================= */
+
+
 
 .progress-bar {
-    width: 100%;
-    height: 12px;
 
-    background-color: lightgray;
+ width: 100%;
+ height: 12px;
+ background-color: lightgray;
+ border-radius: 20px;
+ overflow: hidden;
 
-    border-radius: 20px;
-
-    overflow: hidden;
 }
+
+
 
 .progress {
-    height: 100%;
 
-    background-color: rgba(150, 250, 2, 0.9);
+ height: 100%;
+ background-color: rgba(150, 250, 2, 0.9);
+ border-radius: 20px;
 
-    border-radius: 20px;
 }
 
+
+
 /* =========================
-   LOGIN / SIGNUP FORM
+
+   LOGIN / SIGNUP FORM
+
 ========================= */
+
 
 form {
     max-width: 700px;
-
     margin: 0 auto;
-
-    background-color: white;
-
+    background: linear-gradient(to bottom, #ffffff, #E8ECEF);
     padding: 40px;
-
     border: 1px solid #ccc;
     border-radius: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 form label {
     display: block;
-
     margin-top: 15px;
     margin-bottom: 5px;
-
     font-weight: bold;
 }
 
@@ -265,73 +421,124 @@ form input[type="password"],
 form input[type="confirm-password"],
 form select {
     width: 100%;
-
     padding: 12px;
-
     border: 1px solid #999;
     border-radius: 20px;
-
     font-size: 1rem;
-
-    background: linear-gradient(
-        to right,
-        white,
-        #597faa50
-    );
+    background: linear-gradient(to bottom, #ffffff, #E8ECEF);
 }
+
+form select {
+
+ width: 100%;
+
+ padding: 12px;
+
+ border: 1px solid #999;
+
+ border-radius: 20px;
+
+ font-size: 1rem;
+
+ background: linear-gradient(
+
+ to right,
+
+ white,
+
+ #597faa50
+
+ );
+
+}
+
+
 
 form button {
-    width: 100%;
 
-    margin-top: 25px;
+ width: 100%;
 
-    color: white;
+ margin-top: 25px;
 
-    border: none;
+ color: white;
 
-    background: linear-gradient(
-        120deg,
-        #14532d,
-        #3fae5a
-    );
+ border: none;
+
+ background: linear-gradient(
+ 120deg,
+ #8db4d6
+);
+
 }
+
+
 
 form button:hover {
-    transform: scale(1.03);
+
+ transform: scale(1.03);
+
 }
 
+
+
 /* =========================
-   FOCUS
+
+   FOCUS
+
 ========================= */
+
+
 
 input:focus,
 select:focus,
 button:focus {
-    outline: 3px solid #ffbf47;
-    outline-offset: 2px;
+
+ outline: 3px solid #ffff;
+
+ outline-offset: 2px;
+
 }
 
+
+
 /* =========================
-   MOBILE
+
+   MOBILE
+
 ========================= */
+
+
 
 @media (max-width: 700px) {
 
-    header {
-        padding: 10px;
-    }
 
-    .container {
-        flex-direction: column;
-    }
+ header {
+  padding: 10px;
+ }
 
-    .semester,
-    .classes,
-    .assessment-card {
-        width: 100%;
-    }
 
-    form {
-        padding: 25px 15px;
-    }
+ .container {
+
+ flex-direction: column;
+
+ }
+
+
+ .semester,
+  .classes,
+ .assessment-card {
+
+ width: 100%;
+
+ }
+
+
+
+ form {
+
+ padding: 25px 15px;
+
+ }
+
 }
+

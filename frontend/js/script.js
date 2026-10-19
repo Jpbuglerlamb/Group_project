@@ -1,6 +1,5 @@
 const semester1 = document.getElementById("semester1");
 const semester2 = document.getElementById("semester2");
-const time = document.getElementById("time");
 const classList = document.querySelector(".class-list");
 const assessmentList = document.querySelector(".assessment-list");
 const semester1Classes = [
@@ -63,11 +62,3 @@ classList.addEventListener("click", function (event) {
     console.log(selectedClass);
     console.log(assessments[selectedClass]);
 })
-
-function updateClock() {
-    const now = new Date();
-    const currentTime = now.toLocaleTimeString("en-GB");
-    time.textContent = currentTime;
-}
-updateClock();
-setInterval(updateClock, 1000);

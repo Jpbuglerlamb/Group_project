@@ -3,30 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400&display=swap">
     <link rel="stylesheet" href="css/style.css">
     <title>Study Planner</title>
 </head>
 <body>
+
     <header>
         <div class="clock">
-            <p id="time">16:48</p>
-            <p id="date">Wednesday, 23 September</p>
+            <a href="index.html" aria-label="Study Planner home">
+                <!-- Logo redrawn as SVG: the time replaces "STUDY", the date replaces "Planner" -->
+                <svg class="clock-logo" viewBox="80 70 340 360" role="img">
+                    <g class="rays">
+                        <line x1="213" y1="80"  x2="225" y2="170" />
+                        <line x1="295" y1="88"  x2="265" y2="175" />
+                        <line x1="363" y1="133" x2="295" y2="195" />
+                        <line x1="403" y1="207" x2="315" y2="230" />
+                        <line x1="405" y1="288" x2="315" y2="268" />
+                        <line x1="368" y1="360" x2="298" y2="302" />
+                        <line x1="300" y1="410" x2="268" y2="323" />
+                        <line x1="230" y1="328" x2="220" y2="420" />
+                    </g>
+                    <text id="time" x="290" y="247" text-anchor="end">16:48</text>
+                    <text id="date" x="290" y="290" text-anchor="end">Wednesday, 23 September</text>
+                </svg>
+            </a>
         </div>
-        <a href="signup.html">
-            <button>Login / Signup</button>
+        <h2>Study Planner</h2>
+        <a href="login.html">
+            <button>Login/Signup</button>
         </a>
     </header>
     <nav>
-        <li>
-            <a href="index.html">Home</a>
-            <a href="about.html">About</a>
-            <a href="research.html">Research</a>
-            <a href="contact.html">Contact</a>
-        </li>
+        <ul>
+            <li>
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="research.html">Resources</a>
+                <a href="contact.html">Contact</a>
+            </li>
+        </ul>
     </nav>
-    <section>
-        <h2>Study Planner</h2>
-    </section>
     <main>
         <div class="container">
             <div class="semester">
@@ -50,8 +68,9 @@
         </div>
     </main>
     <footer>
-
+        Contact us
     </footer>
+    <script src="js/clock.js"></script>
     <script src="js/script.js"></script>
 </body>
 </html>
