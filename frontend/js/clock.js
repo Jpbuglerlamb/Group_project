@@ -16,7 +16,7 @@ function updateClock() {
         month: "long"
     });
 
-    // light up the rays one by one as the minute goes by (8 rays = one every 7.5 seconds)
+    // light up the rays one by one as the minute goes by (12 rays = one every 5 seconds)
     const litCount = Math.floor(now.getSeconds() / (60 / rays.length)) + 1;
     rays.forEach((ray, i) => ray.classList.toggle("lit", i < litCount));
 }

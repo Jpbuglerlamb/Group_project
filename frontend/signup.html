@@ -9,18 +9,35 @@
 <body>
     <header>
         <div class="clock">
-            <a href="index.html">
-                <p id="time">16:48</p>
-                <p id="date">Wednesday, 23 September</p>
+            <a href="index.html" aria-label="Study Planner home">
+                <!-- Logo redrawn as SVG: the time replaces "STUDY", the date replaces "Planner" -->
+                <svg class="clock-logo" viewBox="0 0 400 400" role="img">
+                    <g class="rays">
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(0 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(30 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(60 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(90 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(120 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(150 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(180 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(210 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(240 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(270 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(300 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(330 200 200)" />
+                    </g>
+                    <text id="time" x="200" y="210" text-anchor="middle">16:48</text>
+                    <text id="date" x="200" y="250" text-anchor="middle">Wednesday, 23 September</text>
+                </svg>
             </a>
         </div>
-            <button>Login / Signup</button>
-    </header>
-    <section>
         <h2>Study Planner</h2>
-    </section>
+        <a href="login.html">
+            <button>Login/Signup</button>
+        </a>
+    </header>
     <main>
-        <form action="#" method="post">
+        <form id="signup-form">
             <!-- Username -->
             <label for="username">Username</label>
             <input type="text" id="username" name="username" placeholder="Username" required>
@@ -33,18 +50,19 @@
             <!-- Email -->
             <label for="email">Email Address</label>
             <input type="email" id="email" name="email" placeholder="Email" required>
-            <!-- -->
+            <!-- Password -->
             <label for="password">Create Password</label>
             <input type="password" id="password" name="password" required>
-            <label for="password">Confirm Password</label>
-            <input type="confirm-password" id="confirm-password" name="confirm-password" required>
+            <label for="confirm-password">Confirm Password</label>
+            <input type="password" id="confirm-password" name="confirm-password" required>
             <!-- Submit -->
+            <p id="signup-message"></p>
             <button type="submit">Submit</button>
         </form>
     </main>
     <footer>
-
     </footer>
     <script src="js/clock.js"></script>
+    <script src="js/signup.js"></script>
 </body>
 </html>

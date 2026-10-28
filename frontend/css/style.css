@@ -1,24 +1,21 @@
 * {
- box-sizing: border-box;
- font-family: Georgia, serif;
+    box-sizing: border-box;
+    font-family: Georgia, serif;
 }
 
 body {
- margin: 0;
- background-color: #eee8df;
+    margin: 0;
+    background-color: #eee8df;
 }
 
 /* =========================
-
-   HEADER
-
+   HEADER
 ========================= */
-
 
 header {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
-    align-items: start;
+    align-items: center;
     padding: 20px;
     gap: 16px;
 }
@@ -34,90 +31,61 @@ header h2 {
 }
 
 header > a,
-header > button {
+header > button,
+header > .user-area {
     padding: 20px;
     grid-column: 3;
     grid-row: 1;
     justify-self: end;
 }
+.user-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* =========================
+   CLOCK
+========================= */
+
 header .clock {
     grid-column: 1;
     grid-row: 1;
     justify-self: start;
 }
+
 .clock-logo {
     display: block;
-    width: 170px;
+    width: 180px;
     height: 180px;
     overflow: visible;
 }
+
 .clock-logo .rays line {
     stroke: #333333;
     stroke-width: 4;
     stroke-linecap: round;
+    opacity: 0.2;
+    transition: opacity 0.3s;
 }
-.clock-logo .rays line {
-    animation: tick 8s linear infinite;
+
+/* clock.js adds "lit" to the rays as the seconds go by */
+.clock-logo .rays line.lit {
+    opacity: 1;
 }
-@keyframes tick {
-    0%, 12.49% {
-        opacity: 1;
-    }
-    12.5%, 100% {
-        opacity: 0.2;
-    }
-}
-.clock-logo .rays line:nth-child(1) {
-    animation-delay: 0s;
-}
-.clock-logo .rays line:nth-child(2) {
-    animation-delay: -7s;
-}
-.clock-logo .rays line:nth-child(3) {
-    animation-delay: -6s;
-}
-.clock-logo .rays line:nth-child(4) {
-    animation-delay: -5s;
-}
-.clock-logo .rays line:nth-child(5) {
-    animation-delay: -4s;
-}
-.clock-logo .rays line:nth-child(6) {
-    animation-delay: -3s;
-}
-.clock-logo .rays line:nth-child(7) {
-    animation-delay: -2s;
-}
-.clock-logo .rays line:nth-child(8) {
-    animation-delay: -1s;
-}
+
 .clock-logo text {
     fill: #000000;
 }
+
 #time {
     font-family: monospace;
     font-size: 36px;
     font-weight: bold;
-    margin: 0;
-    color: #000000;
 }
-.date-box {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 5px;
-    font-size: 14px;
-}
-#date {
-    background: #e6e3e3;
-    padding: 4px 8px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(91, 79, 79, 0.1);
-}
+
 /* =========================
-
-   GENERAL BUTTONS
-
+   NAV
 ========================= */
 
 nav {
@@ -127,283 +95,221 @@ nav {
     gap: 6px;
 }
 
-button {
-
- background: linear-gradient(
- 120deg,
- #f5f5f5 100%
- );
- border-radius: 20px;
- padding: 12px 16px;
- cursor: pointer;
- transition: 0.2s;
-}
-button:hover {
- transform: scale(1.03);
-}
 /* =========================
+   GENERAL BUTTONS
+========================= */
 
-   MAIN
+button {
+    background: #f5f5f5;
+    border-radius: 20px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
 
+button:hover {
+    transform: scale(1.03);
+}
+
+/* =========================
+   MAIN
 ========================= */
 
 main {
- max-width: 1200px;
-
- margin: 0 auto;
-
- padding: 20px;
-
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-
-
 /* =========================
-
-   STUDY PLANNER
-
+   STUDY PLANNER
 ========================= */
-
-
 
 .container {
-
- display: flex;
-
-  gap: 20px;
-
- width: 100%;
-
- min-height: 500px;
-
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    min-height: 500px;
 }
 
-
-
-/* =========================
-
-   SEMESTER
-
-========================= */
-
-
-
-.semester {
-
- flex: 2;
-
- display: flex;
-
- flex-direction: column;
-
- border: 1px solid #ffff;
-
- border-radius: 10px;
-
- padding-bottom: 15px;
-
-}
-
-
-
+/* shared heading style for the three columns */
 .semester h2,
 .classes h2,
 .assessments h2 {
-
- text-align: center;
-
- margin: 10px 0 20px;
-
- padding: 12px;
-
+    text-align: center;
+    margin: 10px 0 20px;
+    padding: 12px;
 }
-
-
-
-.semester button {
-
- margin: 5px 10px;
-
-}
-
-
-
-.semester button:hover {
-
- transform: translateX(4px);
-
-}
-
-
-
-.semester button.selected {
-
- transform: translateX(5px);
-
- font-weight: 600;
-
- border-width: 2px;
-
- border-color: #C4BCB0;
-
-}
-
-
 
 /* =========================
-
-   CLASSES
-
+   SEMESTER
 ========================= */
-
-
-
-.classes {
-
- flex: 3.5;
- display: flex;
- flex-direction: column;
- border: 1px solid #ffff;
- border-radius: 10px;
- padding-bottom: 15px;
-
-}
-
-
-
-.class-list {
- display: flex;
- flex-direction: column;
-
-}
-
-
-
-.class-list button {
-
- margin: 5px 10px;
-
-}
-
-
-
-.class-list button:hover {
-
- transform: translateX(4px);
-
-}
-
 
 .semester {
-    background: linear-gradient(to bottom, #d3d2d2);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    background: #d3d2d2;
+    border: 1px solid #ffff;
+    border-radius: 10px;
+    padding-bottom: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
+
+.semester button {
+    margin: 5px 10px;
+}
+
+.semester button:hover {
+    transform: translateX(4px);
+}
+
+.semester button.selected {
+    transform: translateX(5px);
+    font-weight: 600;
+    border-width: 2px;
+    border-color: #c4bcb0;
+}
+
+/* =========================
+   CLASSES
+========================= */
 
 .classes {
-    background: linear-gradient(to bottom, #c4d8e5);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    flex: 3.5;
+    display: flex;
+    flex-direction: column;
+    background: #c4d8e5;
+    border: 1px solid #ffff;
+    border-radius: 10px;
+    padding-bottom: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.assessments {
-    background: linear-gradient(to bottom, #f6d8d6);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+.class-list {
+    display: flex;
+    flex-direction: column;
 }
+
+/* each class is a row: the class name button, then Rename and Delete */
+.class-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 5px 10px;
+}
+
+.class-row .class-button {
+    flex: 1;
+}
+
+.class-row .class-button:hover {
+    transform: translateX(4px);
+}
+
+.class-row .class-button.selected {
+    transform: translateX(5px);
+    font-weight: 600;
+    border-width: 2px;
+    border-color: #c4bcb0;
+}
+
+/* the small Rename / Edit / Delete buttons */
+.small-button {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+}
+
 /* =========================
-
-   ASSESSMENTS
-
+   ASSESSMENTS
 ========================= */
-
-
 
 .assessment-card {
-
- flex: 4.5;
- display: flex;
-
+    flex: 4.5;
+    display: flex;
 }
-
-
 
 .assessments {
-
- width: 100%;
- display: flex;
-
- flex-direction: column;
- border: 1px solid #ffff;
- border-radius: 10px;
- padding-bottom: 15px;
-
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #f6d8d6;
+    border: 1px solid #ffff;
+    border-radius: 10px;
+    padding-bottom: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
-
-
 
 .assessment-item {
- border: 1px solid #ffff;
- border-radius: 20px;
- padding: 15px;
- margin: 0 10px 15px;
- background: linear-gradient(
- 120deg,
- white 30%,
- #597faa 100%
- );
+    border: 1px solid #ffff;
+    border-radius: 20px;
+    padding: 15px;
+    margin: 0 10px 15px;
+    background: linear-gradient(120deg, white 30%, #597faa 100%);
 }
+
 .assessment-item h3 {
- margin-top: 0;
+    margin-top: 0;
 }
+
 .assessment-item p {
- margin: 8px 0;
+    margin: 8px 0;
 }
 
+.assessment-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+}
 
+.empty-message {
+    margin: 0 10px 15px;
+    font-style: italic;
+}
 
 /* =========================
-
-   PROGRESS BAR
-
+   PROGRESS BAR
 ========================= */
-
-
 
 .progress-bar {
-
- width: 100%;
- height: 12px;
- background-color: lightgray;
- border-radius: 20px;
- overflow: hidden;
-
+    width: 100%;
+    height: 12px;
+    background-color: lightgray;
+    border-radius: 20px;
+    overflow: hidden;
 }
-
-
 
 .progress {
-
- height: 100%;
- background-color: rgba(150, 250, 2, 0.9);
- border-radius: 20px;
-
+    height: 100%;
+    background-color: rgba(150, 250, 2, 0.9);
+    border-radius: 20px;
 }
 
+/* the slider under the bar */
+.progress-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 0.9rem;
+}
 
+.progress-control input[type="range"] {
+    flex: 1;
+}
 
 /* =========================
-
-   LOGIN / SIGNUP FORM
-
+   FORMS
 ========================= */
-
 
 form {
     max-width: 700px;
     margin: 0 auto;
-    background: linear-gradient(to bottom, #ffffff, #E8ECEF);
+    background: linear-gradient(to bottom, #ffffff, #e8ecef);
     padding: 40px;
     border: 1px solid #ccc;
     border-radius: 20px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 form label {
@@ -418,127 +324,114 @@ form input[type="email"],
 form input[type="number"],
 form input[type="tel"],
 form input[type="password"],
-form input[type="confirm-password"],
 form select {
     width: 100%;
     padding: 12px;
     border: 1px solid #999;
     border-radius: 20px;
     font-size: 1rem;
-    background: linear-gradient(to bottom, #ffffff, #E8ECEF);
+    background: linear-gradient(to bottom, #ffffff, #e8ecef);
 }
 
+/* dropdowns get their own background; everything else comes from the rule above */
 form select {
-
- width: 100%;
-
- padding: 12px;
-
- border: 1px solid #999;
-
- border-radius: 20px;
-
- font-size: 1rem;
-
- background: linear-gradient(
-
- to right,
-
- white,
-
- #597faa50
-
- );
-
+    background: linear-gradient(to right, white, #597faa50);
 }
-
-
 
 form button {
-
- width: 100%;
-
- margin-top: 25px;
-
- color: white;
-
- border: none;
-
- background: linear-gradient(
- 120deg,
- #8db4d6
-);
-
+    width: 100%;
+    margin-top: 25px;
+    color: white;
+    border: none;
+    background: #8db4d6;
 }
-
-
 
 form button:hover {
-
- transform: scale(1.03);
-
+    transform: scale(1.03);
 }
 
+/* the smaller "Add class" / "Add assessment" forms inside the planner.
+   These come after the login form rules above, so they win where they differ. */
+.add-form {
+    max-width: none;
+    margin: 10px;
+    padding: 15px 20px;
+    border-radius: 15px;
+    box-shadow: none;
+}
 
+.add-form h3 {
+    margin: 0 0 5px;
+}
+
+.add-form label {
+    margin-top: 10px;
+}
+
+.add-form input[type="text"],
+.add-form input[type="date"] {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #999;
+    border-radius: 20px;
+    font-size: 1rem;
+}
+
+.add-form button {
+    margin-top: 15px;
+    padding: 10px 16px;
+}
+
+/* error messages under a form, such as "Pick a semester first" */
+.form-message {
+    margin: 8px 0 0;
+    color: #a12622;
+}
+
+.form-message:empty {
+    display: none;
+}
+
+/* the banner on the public demo page */
+.demo-notice {
+    margin: 0 0 20px;
+    padding: 12px 16px;
+    text-align: center;
+    background: #ffffff;
+    border-radius: 15px;
+}
 
 /* =========================
-
-   FOCUS
-
+   FOCUS
 ========================= */
-
-
 
 input:focus,
 select:focus,
 button:focus {
-
- outline: 3px solid #ffff;
-
- outline-offset: 2px;
-
+    outline: 3px solid #ffff;
+    outline-offset: 2px;
 }
-
-
 
 /* =========================
-
-   MOBILE
-
+   MOBILE
 ========================= */
 
-
-
 @media (max-width: 700px) {
+    header {
+        padding: 10px;
+    }
 
+    .container {
+        flex-direction: column;
+    }
 
- header {
-  padding: 10px;
- }
+    .semester,
+    .classes,
+    .assessment-card {
+        width: 100%;
+    }
 
-
- .container {
-
- flex-direction: column;
-
- }
-
-
- .semester,
-  .classes,
- .assessment-card {
-
- width: 100%;
-
- }
-
-
-
- form {
-
- padding: 25px 15px;
-
- }
-
+    form {
+        padding: 25px 15px;
+    }
 }
-

@@ -1,10 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>My Planner</title>
 </head>
 <body>
-$END$
+    <header>
+        <div class="clock">
+            <a href="index.html" aria-label="Study Planner home">
+                <!-- Logo redrawn as SVG: the time replaces "STUDY", the date replaces "Planner" -->
+                <svg class="clock-logo" viewBox="0 0 400 400" role="img">
+                    <g class="rays">
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(0 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(30 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(60 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(90 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(120 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(150 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(180 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(210 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(240 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(270 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(300 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(330 200 200)" />
+                    </g>
+                    <text id="time" x="200" y="210" text-anchor="middle">16:48</text>
+                    <text id="date" x="200" y="250" text-anchor="middle">Wednesday, 23 September</text>
+                </svg>
+            </a>
+        </div>
+        <h2>Study Planner</h2>
+        <div class="user-area">
+            <span id="username-display"></span>
+            <button id="logout-button">Log out</button>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li>
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="research.html">Resources</a>
+                <a href="contact.html">Contact</a>
+            </li>
+        </ul>
+    </nav>
+    <main>
+        <div class="container">
+            <div class="semester">
+                <h2>Semester</h2>
+                <button id="semester1">semester 1</button>
+                <button id="semester2">semester 2</button>
+            </div>
+            <div class="classes">
+                <h2>Classes</h2>
+                <div class="class-list">
+                </div>
+                <form id="add-class-form" class="add-form">
+                    <h3>Add class</h3>
+                    <label for="class-name">Class name</label>
+                    <input type="text" id="class-name" name="name" required>
+                    <p class="form-message" id="class-message"></p>
+                    <button type="submit">Add</button>
+                </form>
+            </div>
+            <div class="assessment-card">
+                <div class="assessments">
+                    <h2>Assessment</h2>
+                    <div class="assessment-list">
+                    </div>
+                    <form id="add-assessment-form" class="add-form">
+                        <h3>Add Assessment</h3>
+                        <label for="assessment-title">Title</label>
+                        <input type="text" id="assessment-title" name="title" required>
+                        <label for="assessment-due">Due Date</label>
+                        <input type="date" id="assessment-due" name="due_date" required>
+                        <p class="form-message" id="assessment-message"></p>
+                        <button type="submit">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        Contact us
+    </footer>
+    <script src="js/clock.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/auth.js"></script>
 </body>
 </html>
