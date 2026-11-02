@@ -253,7 +253,40 @@ main {
     padding: 6px 10px;
     font-size: 0.8rem;
 }
+/* confirm box */
+.confirm-dialog {
+    display: flex;
+    align-items: center;
+}
+.confirm-dialog button {
+    margin: 5px;
+}
+.confirm-dialog button:hover {
+    transform: translateX(4px);
+}
+.confirm-dialog button.selected {
+    transform: translateX(5px);
 
+}
+.confirm-dialog button.selected:hover {
+    transform: translateX(5px);
+}
+.confirm-text {
+    display: flex;
+    flex-direction: column;
+}
+.confirm-cancel-button {
+    display: flex;
+    align-items: center;
+}
+.confirm-cancel-button:hover {
+    transform: translateX(4px);
+}
+.confirm-ok-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 /* =========================
    ASSESSMENTS
 ========================= */

@@ -26,6 +26,34 @@ function makeButton(text, className, onClick) {
     button.addEventListener("click", onClick);
     return button;
 }
+// =========================
+// CONFIRM POP-UP
+// =========================
+
+const confirmDialog = document.getElementById("confirm-dialog");
+const confirmText = document.getElementById("confirm-text");
+const confirmOk = document.getElementById("confirm-ok");
+const confirmCancel = document.getElementById("confirm-cancel");
+
+// shows our own pop-up and waits for an answer: true for OK, false for Cancel or Escape
+function askConfirm(message) {
+    return new Promise(function (resolve) {
+        confirmText.textContent = message;
+
+        confirmOk.onclick = function () {
+            confirmDialog.close("ok");
+        };
+        confirmCancel.onclick = function () {
+            confirmDialog.close("cancel");
+        };
+        confirmDialog.onclose = function () {
+            resolve(confirmDialog.returnValue === "ok");
+        };
+
+        confirmDialog.returnValue = "";
+        confirmDialog.showModal();
+    });
+}
 
 // =========================
 // SEMESTERS
@@ -105,7 +133,7 @@ async function renameClass(subject) {
 }
 
 async function deleteClass(subject) {
-    if (!confirm(`Delete "${subject.name}" and all of its assessments?`)) {
+        if (!(await askConfirm(`Delete "${subject.name}" and all of its assessments?`))) {
         return;
     }
     const result = await api.deleteClass(subject.id);
@@ -262,7 +290,7 @@ async function editAssessment(assessment) {
 }
 
 async function deleteAssessment(assessment) {
-    if (!confirm(`Delete "${assessment.title}"?`)) {
+        if (!(await askConfirm(`Delete "${assessment.title}"?`))) {
         return;
     }
 
