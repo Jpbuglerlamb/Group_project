@@ -5,3 +5,4 @@ __pycache__/
 .DS_Store
 backend/study_planner.db
 .claude/
+backend/css/style1.css
