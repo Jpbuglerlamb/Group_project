@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <title>My Planner</title>
+</head>
+<body>
+    <header>
+        <div class="clock">
+            <a href="index.html" aria-label="Study Planner home">
+                <!-- Logo redrawn as SVG: the time replaces "STUDY", the date replaces "Planner" -->
+                <svg class="clock-logo" viewBox="0 0 400 400" role="img">
+                    <g class="rays">
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(0 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(30 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(60 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(90 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(120 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(150 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(180 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(210 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(240 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(270 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(300 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(330 200 200)" />
+                    </g>
+                    <text id="time" x="200" y="210" text-anchor="middle">16:48</text>
+                    <text id="date" x="200" y="250" text-anchor="middle">Wednesday, 23 September</text>
+                </svg>
+            </a>
+        </div>
+        <div class="site-title">
+            <h2>Study Planner</h2>
+            <p class="made-by">
+                Powered by
+                <img src="images/DA-logo.png" alt="Dundee and Angus College">
+            </p>
+        </div>
+        <div class="user-area">
+            <span id="username-display"></span>
+            <button id="logout-button">Log out</button>
+        </div>
+    </header>
+    <nav class="main-nav">
+        <a href="home.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="resources.html">Resources</a>
+        <a href="calendar.html">Calendar</a>
+    </nav>
+<main>
+
+    <h2 class="resources-title">Student Support</h2>
+    <div class="resource-grid">
+        <a class="resource-card" href="https://dundeeandangus.ac.uk/studying-at-da/student-support/student-services-team/" target="_blank" rel="noopener noreferrer">
+            <h3>Student Services Team</h3>
+            <p>
+                The Student Services Team are here to help you with all aspects of college life such as your funding, support for your studies, course guidance, travel to college, health information etc.
+            </p>
+        </a>
+        <a class="resource-card" href="https://dundeeandangus.ac.uk/studying-at-da/student-support/student-services-support/" target="_blank" rel="noopener noreferer">
+            <h3>Student Services Support</h3>
+            <p>
+                Dundee and Angus College puts the learner experience at the centre of how we run our college. We understand that sometimes our learners may need additional support.
+            </p>
+        </a>
+        <a class="resource-card" href="https://dundeeandangus.ac.uk/studying-at-da/student-support/counselling-service/" target="_blank" rel="noopener noreferer">
+            <h3>Student Counselling</h3>
+            <p>
+                Counselling can help you to make sense of your distress and emotional difficulties, enabling you to find meaningful ways to support yourself through your unique challenges. Although many personal issues can be shared with friends or family, it can be helpful to speak to someone who is neutral and outside of your day-to-day experiences.
+                Students throughout each campus can access the counselling service, benefiting from a confidential and safe space to talk regularly through emotional concerns, finding solutions to personal obstacles and developing their self-care.
+                For many of us, it isn’t easy to understand our experiences or put them into words.
+            </p>
+        </a>
+        <a class="resource-card" href="https://dundeeandangus.ac.uk/studying-at-da/student-support/lgbtplus-support/" target="_blank" rel="noopener noreferer">
+            <h3>Student LGTB</h3>
+            <p>
+                At Dundee and Angus College, we are proud to foster an inclusive, respectful, and supportive environment for all students, regardless of their sexual orientation, gender identity, or gender expression.
+                We celebrate the rich diversity of our community and are dedicated to ensuring that every individual feels seen, valued, and empowered to be their authentic self.
+            </p>
+        </a>
+        <a class="resource-card" href="https://dundeeandangus.ac.uk/studying-at-da/student-support/learner-and-community-engagement/" target="_blank" rel="noopener noreferer">
+            <h3>Student Community</h3>
+            <p>
+                Our aim is to make your time at college fun, memorable and successful, by creating opportunities for you to be involved in a whole range of activities and events that really promote and celebrate your wider achievements!
+            </p>
+        </a>
+        <a class="resource-card" href="https://dundeeandangus.ac.uk/studying-at-da/student-support/careers/" target="_blank" rel="noopener noreferer">
+            <h3>Career</h3>
+            <p>
+                We want the people of the Dundee and Angus region to be better informed and prepared for the career options available to them, no matter what stage they are at.
+            </p>
+        </a>
+        <a class="resource-card" href="https://dundeeandangus.ac.uk/studying-at-da/student-support/library/" target="_blank" rel="noopener noreferer">
+            <h3>Library</h3>
+            <p>
+                Each campus has a library with a wide selection of books and magazines related to all subject areas taught within the College. Our extensive study skills sections might be a good place to start your studies.
+            </p>
+        </a>
+        <a class="resource-card" href="https://dundeeandangus.ac.uk/studying-at-da/student-support/accommodation-options/" target="_blank" rel="noopener noreferer">
+            <h3>Accommodation</h3>
+            <p>
+                For those looking to study at Dundee and Angus College, it is important to have the right accommodation in place soon after accepting your offer of study.
+            </p>
+        </a>
+        <a class="resource-card" href="https://dundeeandangus.ac.uk/studying-at-da/student-support/external-support/" target="_blank" rel="noopener noreferer">
+            <h3>External Support</h3>
+            <p>
+                While we provide a wide range of support, there are times when students’ needs are best met through external agencies and partners. This list is not exhaustive, and we recognise there may be other valuable services available.
+            </p>
+        </a>
+    </div>
+</main>
+<footer class="site-footer">
+    <div class="footer-content">
+        <div class="footer-brand">
+            <h3>Study Planner</h3>
+            <p>Keep track of your classes and assessments.</p>
+        </div>
+        <div class="footer-links">
+            <h4>Links</h4>
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="calendar.html">Calendar</a>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        &copy; 2026 Study Planner
+    </div>
+</footer>
+    <script src="js/clock.js"></script>
+    <script src="js/auth.js"></script>
+
+</body>
+</html>

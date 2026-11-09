@@ -1,6 +1,6 @@
 // Talks to the Flask server. Loaded by home.html (the real, logged-in planner).
 // demo-api.js has the same functions for the public demo on index.html,
-// so script.js works with either one without knowing which it has.
+// so calendar.js works with either one without knowing which it has.
 
 // Sends a request and always gives back { ok: true, data } or { ok: false, error }
 async function request(url, method, body) {
@@ -40,6 +40,9 @@ const api = {
     },
     getAssessments: function (classId) {
         return request(`/api/subjects/${classId}/assessments`, "GET");
+    },
+    getAllAssessments: function () {
+        return request("/api/assessments", "GET");
     },
     addAssessment: function (classId, title, dueDate) {
         return request("/api/assessments", "POST", { subject_id: classId, title: title, due_date: dueDate });

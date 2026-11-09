@@ -195,6 +195,7 @@ def delete_subject(subject_id):
 # ASSESSMENTS
 # =========================
 
+
 @app.route("/api/subjects/<int:subject_id>/assessments")
 def get_assessments(subject_id):
     if "user_id" not in session:
@@ -212,6 +213,22 @@ def get_assessments(subject_id):
     connection.close()
     return jsonify([dict(row) for row in rows])
 
+@app.route("/api/assessments")
+def get_all_assessments():
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    rows = connection.execute("""
+        SELECT assessments.id, assessments.title, assessments.due_date, assessments.progress, subjects.name AS class_name
+        FROM assessments
+        JOIN subjects ON assessments.subject_id = subjects.id
+        WHERE subjects.user_id = ?
+        ORDER BY assessments.due_date
+    """, (session["user_id"],)).fetchall()
+    connection.close()
+    return jsonify([dict(row) for row in rows])
 
 @app.route("/api/assessments", methods=["POST"])
 def add_assessment():

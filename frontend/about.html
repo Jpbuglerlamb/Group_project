@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>About - Study Planner</title>
+</head>
+<body>
+    <header>
+        <div class="clock">
+            <a href="index.html" aria-label="Study Planner home">
+                <!-- Logo redrawn as SVG: the time replaces "STUDY", the date replaces "Planner" -->
+                <svg class="clock-logo" viewBox="0 0 400 400" role="img">
+                    <g class="rays">
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(0 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(30 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(60 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(90 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(120 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(150 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(180 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(210 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(240 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(270 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(300 200 200)" />
+                        <line x1="200" y1="20" x2="200" y2="80" transform="rotate(330 200 200)" />
+                    </g>
+                    <text id="time" x="200" y="210" text-anchor="middle">16:48</text>
+                    <text id="date" x="200" y="250" text-anchor="middle">Wednesday, 23 September</text>
+                </svg>
+            </a>
+        </div>
+        <div class="site-title">
+            <h2>Study Planner</h2>
+            <p class="made-by">
+                Powered by
+                <img src="images/DA-logo.png" alt="Dundee and Angus College">
+            </p>
+        </div>
+        <a href="login.html">
+            <button>Login/Signup</button>
+        </a>
+    </header>
+    <nav class="main-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="resources.html">Resources</a>
+        <a href="calendar.html">Calendar</a>
+    </nav>
+    <main class="about-page">
+        <section class="about-intro">
+            <h1>About Study Planner</h1>
+            <p>
+                Study Planner is a website that helps students keep track of their classes and
+                assessments across the college year, all in one place.
+            </p>
+            <p>
+                When you have several classes, each with its own deadlines, it is easy to lose track
+                of what is due and when. Study Planner puts every class and every assessment in one
+                planner, shows how far through each piece of work you are, and marks every due date
+                on a calendar.
+            </p>
+        </section>
+
+        <section>
+            <h2>What you can do</h2>
+            <div class="about-grid">
+                <div class="about-card">
+                    <h3>Organise by semester</h3>
+                    <p>Add your classes to semester 1 or semester 2, and rename or remove them as your timetable changes.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Track assessments</h3>
+                    <p>Add each assessment with its due date. They are listed in date order, so the next deadline is always at the top.</p>
+                </div>
+                <div class="about-card">
+                    <h3>See your progress</h3>
+                    <p>Move the slider as you work on an assessment, and the progress bar shows how close you are to finishing.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Calendar view</h3>
+                    <p>Every assessment appears on the calendar on its due date, so you can see your busy weeks coming.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Your own account</h3>
+                    <p>Sign up to keep your planner saved. Your work is private: each student only ever sees their own classes and assessments.</p>
+                </div>
+                <div class="about-card">
+                    <h3>Try it first</h3>
+                    <p>The home page has a demo with example classes, so you can try everything out before signing up.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>How it works</h2>
+            <ol class="about-steps">
+                <li><strong>Sign up</strong> for a free account.</li>
+                <li><strong>Pick a semester</strong> and add the classes you are taking.</li>
+                <li><strong>Choose a class</strong> and add its assessments with their due dates.</li>
+                <li><strong>Update your progress</strong> as you go, and check the calendar to plan your weeks.</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>Who made it</h2>
+            <p>
+                Study Planner was made by a group of first-year students as a Team Working project
+                at Dundee and Angus College. It is built with HTML, CSS and JavaScript, with a Python
+                (Flask) server and an SQLite database to save each student's planner.
+            </p>
+        </section>
+
+        <div class="about-actions">
+            <a href="index.html"><button>Try the demo</button></a>
+            <a href="signup.html"><button>Sign up</button></a>
+        </div>
+    </main>
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>Study Planner</h3>
+                <p>Keep track of your classes and assessments.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Links</h4>
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="resources.html">Resources</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Study Planner
+        </div>
+    </footer>
+    <script src="js/clock.js"></script>
+</body>
+</html>

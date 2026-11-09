@@ -73,7 +73,7 @@ Group_project/
     ├── css/style.css
     ├── images/
     └── js/
-        ├── script.js      Draws the planner (used by index.html and home.html)
+        ├── calendar.js      Draws the planner (used by index.html and home.html)
         ├── api.js         Talks to the server (home.html)
         ├── demo-api.js    Example data for the demo (index.html)
         ├── auth.js        Shows the username and handles logging out
@@ -82,7 +82,7 @@ Group_project/
         └── clock.js       The logo clock
 ```
 
-`api.js` and `demo-api.js` have the same functions, so `script.js` works with either one. That's how the demo and the real planner share the same code.
+`api.js` and `demo-api.js` have the same functions, so `calendar.js` works with either one. That's how the demo and the real planner share the same code.
 
 ## Database design
 
