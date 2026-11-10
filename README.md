@@ -12,6 +12,10 @@ This is a Year 1 Team Working group project.
 - **Accounts**: sign up, log in and log out. Passwords are hashed, never stored as plain text.
 - **Classes**: add, rename and delete classes in semester 1 or semester 2.
 - **Assessments**: add assessments with a due date, edit or delete them, and track progress with a slider and progress bar. Sorted by due date.
+- **Confirm pop-up**: deleting a class or assessment asks first, in a pop-up styled to match the site.
+- **Calendar**: under the planner, a calendar marks every assessment on its due date. Click a day to see what's due, labelled with its class.
+- **Resources**: links to Dundee and Angus College support services, such as the library, counselling and careers.
+- **About page**: explains what the site is and how to use it.
 - **Logo clock**: the Study Planner logo shows the live time and date, and its rays light up as the seconds go by.
 
 ## Built with
@@ -67,13 +71,18 @@ Group_project/
 │   └── study_planner.db   The SQLite database (made by study.py)
 └── frontend/
     ├── index.html         Public home page with the demo
-    ├── home.html          The logged-in planner
+    ├── home.html          The logged-in planner, with the calendar underneath
+    ├── about.html         What the site is and how to use it
+    ├── resources.html     Links to college support services
     ├── login.html
     ├── signup.html
-    ├── css/style.css
-    ├── images/
+    ├── css/
+    │   ├── style.css      Styles for the whole site
+    │   └── calendar.css   Styles for the calendar
+    ├── images/            Logos
     └── js/
-        ├── calendar.js      Draws the planner (used by index.html and home.html)
+        ├── script.js      Draws the planner (used by index.html and home.html)
+        ├── calendar.js    Draws the calendar and fills it with your assessments (home.html)
         ├── api.js         Talks to the server (home.html)
         ├── demo-api.js    Example data for the demo (index.html)
         ├── auth.js        Shows the username and handles logging out
@@ -82,7 +91,7 @@ Group_project/
         └── clock.js       The logo clock
 ```
 
-`api.js` and `demo-api.js` have the same functions, so `calendar.js` works with either one. That's how the demo and the real planner share the same code.
+`api.js` and `demo-api.js` have the same functions, so `script.js` works with either one. That's how the demo and the real planner share the same code.
 
 ## Database design
 
@@ -118,6 +127,7 @@ All routes except sign-up and login need you to be logged in. They only ever sho
 | PUT | `/api/subjects/3` | Rename class 3 |
 | DELETE | `/api/subjects/3` | Delete class 3 and its assessments |
 | GET | `/api/subjects/3/assessments` | The assessments in class 3 |
+| GET | `/api/assessments` | All your assessments, with their class name (used by the calendar) |
 | POST | `/api/assessments` | Add an assessment |
 | PUT | `/api/assessments/2` | Change assessment 2's title, due date or progress |
 | DELETE | `/api/assessments/2` | Delete assessment 2 |
@@ -130,7 +140,7 @@ The pages `/` (the demo) and `/home.html` (the planner, logged-in users only) ar
 - **Sessions:** Flask keeps track of who is logged in with a signed cookie, so it can't be faked.
 - **SQL injection:** every query uses `?` placeholders instead of adding user input to the SQL text.
 - **Ownership checks:** the server checks that a class or assessment belongs to the logged-in user before showing or changing it. The user's id always comes from the session, never from the browser.
-- **XSS (cross-site scripting):** anything a user types is put on the page with `textContent`, so it's always shown as text and never run as code.
+- **XSS (cross-site scripting):** in the planner, anything a user types is put on the page with `textContent`, so it's always shown as text and never run as code. (The calendar still uses `innerHTML` for assessment titles: see Still to do.)
 - Login gives the same message for a wrong username and a wrong password, so it doesn't reveal which usernames exist.
 
 **Before putting this online:** set a real secret key with the `SECRET_KEY` environment variable. The fallback key written in `app.py` is only for testing on your own computer.
@@ -138,7 +148,11 @@ The pages `/` (the demo) and `/home.html` (the planner, logged-in users only) ar
 ## Still to do
 
 - Proper edit forms for renaming classes and editing assessments (they currently use pop-up boxes)
-- The About, Resources and Contact pages
+- The Contact page
+- The calendar's side panel shows assessment titles with `innerHTML`: switch it to `textContent` like the planner
+- Update the calendar straight away when an assessment is added, edited or deleted (at the moment it updates when the page reloads)
+- Remove the calendar's own "Add Assignment" box, since assessments are now added in the planner
+- Decide what to do with the separate `calendar.html` page, now that the calendar is under the planner
 - Design and styling improvements
 - Letting a signed-in user open their planner from the public home page
 
