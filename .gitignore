@@ -4,6 +4,5 @@ __pycache__/
 .idea/
 .DS_Store
 backend/study_planner.db
-.claude/
 frontend/css/style1.css
 frontend/images/TP-logos-da.png

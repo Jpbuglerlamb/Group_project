@@ -557,6 +557,19 @@ button:focus {
     font-size: 15px;
     line-height: 1.4;
 }
+.study-tips {
+    max-width: 900px;
+    margin: 0 auto 40px;
+    padding: 20px 30px;
+    background: #f5f5f5;
+    border: 2px solid #888;
+    border-radius: 25px;
+    line-height: 1.6;
+}
+
+.study-tips li {
+    margin-bottom: 10px;
+}
 
 /* =========================
    ABOUT
