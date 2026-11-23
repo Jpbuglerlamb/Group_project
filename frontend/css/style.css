@@ -709,6 +709,8 @@ button:focus {
 
     header .clock,
     .site-title,
+    header > a,
+    header > button,
     header > .user-area {
         grid-column: 1;
         grid-row: auto;
