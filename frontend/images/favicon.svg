@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <!-- cream square with rounded corners, the same colour as the page -->
+    <rect width="64" height="64" rx="14" fill="#eee8df"/>
+
+    <!-- 8 gold rays: each is the top ray, turned around the centre -->
+    <g stroke="#9c8a55" stroke-width="4" stroke-linecap="round">
+        <line x1="32" y1="4" x2="32" y2="12"/>
+        <line x1="32" y1="4" x2="32" y2="12" transform="rotate(45 32 32)"/>
+        <line x1="32" y1="4" x2="32" y2="12" transform="rotate(90 32 32)"/>
+        <line x1="32" y1="4" x2="32" y2="12" transform="rotate(135 32 32)"/>
+        <line x1="32" y1="4" x2="32" y2="12" transform="rotate(180 32 32)"/>
+        <line x1="32" y1="4" x2="32" y2="12" transform="rotate(225 32 32)"/>
+        <line x1="32" y1="4" x2="32" y2="12" transform="rotate(270 32 32)"/>
+        <line x1="32" y1="4" x2="32" y2="12" transform="rotate(315 32 32)"/>
+    </g>
+
+    <!-- SP for Study Planner, in the middle -->
+    <text x="32" y="39" text-anchor="middle" font-family="Georgia, serif" font-size="20" font-weight="bold" fill="#9c8a55">SP</text>
+</svg>
