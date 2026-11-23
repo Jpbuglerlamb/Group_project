@@ -26,6 +26,11 @@ function makeButton(text, className, onClick) {
     button.addEventListener("click", onClick);
     return button;
 }
+function refreshCalendar () {
+    if (typeof loadCalendarAssessments == "function") {
+        loadCalendarAssessments()
+    }
+}
 // =========================
 // CONFIRM POP-UP
 // =========================
@@ -54,6 +59,35 @@ function askConfirm(message) {
         confirmDialog.showModal();
     });
 }
+// =========================
+// EDIT POP-UP
+// =========================
+
+const editDialog = document.getElementById("edit-dialog");
+const editTitle = document.getElementById("edit-title");
+const editDue = document.getElementById("edit-due");
+const editCancel = document.getElementById("edit-cancel");
+
+function askEdit(assessment) {
+    return new Promise(function (resolve) {
+        editTitle.value = assessment.title;
+        editDue.value = assessment.due_date;
+
+        editCancel.onclick = function () {
+            editDialog.close("cancel");
+        };
+        editDialog.onclose = function () {
+            if (editDialog.returnValue === "save") {
+                resolve({ title: editTitle.value.trim(), due_date: editDue.value });
+            } else {
+                resolve(null);
+            }
+        };
+
+        editDialog.returnValue = "";
+        editDialog.showModal();
+    });
+}
 
 // =========================
 // SEMESTERS
@@ -67,7 +101,7 @@ function selectSemester(semesterNumber) {
     currentClassId = null;
     assessmentList.innerHTML = "";
     assessmentMessage.textContent = "";
-    loadClasses();
+    return loadClasses();
 }
 
 semester1.addEventListener("click", function () {
@@ -83,6 +117,7 @@ semester2.addEventListener("click", function () {
 // =========================
 
 async function loadClasses() {
+    refreshCalendar()
     classMessage.textContent = "";
     const result = await api.getClasses(currentSemester);
     classList.innerHTML = "";
@@ -116,9 +151,23 @@ function selectClass(classId) {
     classList.querySelectorAll(".class-button").forEach(function (button) {
         button.classList.toggle("selected", Number(button.dataset.id) === classId);
     });
-    loadAssessments();
+    return loadAssessments();
 }
 
+async function showAssessment(semesterNumber, classId, assessmentId) {
+    await selectSemester(semesterNumber);
+    await selectClass(classId);
+
+    const card = document.getElementById("assessment-" + assessmentId);
+    if (card === null) {
+        return;
+    }
+    card.scrollIntoView({ behavior: "smooth", block: "center" });
+    card.classList.add("highlight");
+    setTimeout(function () {
+        card.classList.remove("highlight");
+    }, 2000);
+}
 async function renameClass(subject) {
     const newName = prompt("New name for this class:", subject.name);
     if (newName === null || newName.trim() === "") {
@@ -133,7 +182,7 @@ async function renameClass(subject) {
 }
 
 async function deleteClass(subject) {
-        if (!(await askConfirm(`Delete "${subject.name}" and all of its assessments?`))) {
+    if (!(await askConfirm(`Delete "${subject.name}" and all of its assessments?`))) {
         return;
     }
     const result = await api.deleteClass(subject.id);
@@ -170,6 +219,7 @@ addClassForm.addEventListener("submit", async function (event) {
 
 // gets the selected class's assessments and shows them
 async function loadAssessments() {
+    refreshCalendar()
     assessmentMessage.textContent = "";
     const result = await api.getAssessments(currentClassId);
 
@@ -192,13 +242,18 @@ async function loadAssessments() {
     });
 }
 
-// builds one assessment card: title, due date, progress bar, slider and buttons
+// builds one assessment card: title, due date, progress bar, checklist and buttons
 function buildAssessment(assessment) {
     const item = document.createElement("div");
     item.className = "assessment-item";
+    item.id = "assessment-" + assessment.id;
 
     const title = document.createElement("h3");
     title.textContent = assessment.title;
+    if (assessment.progress === 100) {
+        title.textContent += " ✓ Done";
+        item.classList.add("done");
+    }
 
     const due = document.createElement("p");
     due.textContent = "Due: " + formatDate(assessment.due_date);
@@ -211,45 +266,41 @@ function buildAssessment(assessment) {
     fill.style.width = assessment.progress + "%";
     bar.appendChild(fill);
 
-    // the slider to change it
-    const control = document.createElement("div");
-    control.className = "progress-control";
-
-    const sliderId = "progress-" + assessment.id;
-    const label = document.createElement("label");
-    label.htmlFor = sliderId;
-    label.textContent = "Progress";
-
-    const slider = document.createElement("input");
-    slider.type = "range";
-    slider.id = sliderId;
-    slider.min = 0;
-    slider.max = 100;
-    slider.step = 5;
-    slider.value = assessment.progress;
-
-    const percent = document.createElement("span");
+    // the percentage, under the bar
+    const percent = document.createElement("p");
+    percent.className = "progress-text";
     percent.textContent = assessment.progress + "%";
 
-    // "input" happens while dragging: move the bar straight away
-    slider.addEventListener("input", function () {
-        fill.style.width = slider.value + "%";
-        percent.textContent = slider.value + "%";
-    });
+    // the checklist: filled in by loadChecklist once the steps arrive
+    const checklist = document.createElement("ul");
+    checklist.className = "checklist";
+    loadChecklist(assessment, checklist);
 
-    // "change" happens when you let go: save it
-    slider.addEventListener("change", async function () {
-        assessment.progress = Number(slider.value);
-        const result = await api.updateAssessment(assessment);
+    // the box for adding a step
+    const addStepForm = document.createElement("form");
+    addStepForm.className = "add-step-form";
+
+    const stepInput = document.createElement("input");
+    stepInput.type = "text";
+    stepInput.placeholder = "Add a step";
+    stepInput.setAttribute("aria-label", "New step for " + assessment.title);
+
+    const stepButton = document.createElement("button");
+    stepButton.type = "submit";
+    stepButton.textContent = "Add step";
+
+    addStepForm.appendChild(stepInput);
+    addStepForm.appendChild(stepButton);
+
+    addStepForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const result = await api.addChecklistItem(assessment.id, stepInput.value.trim());
         if (!result.ok) {
             assessmentMessage.textContent = result.error;
-            loadAssessments();
+            return;
         }
+        loadAssessments();
     });
-
-    control.appendChild(label);
-    control.appendChild(slider);
-    control.appendChild(percent);
 
     // the buttons
     const actions = document.createElement("div");
@@ -264,27 +315,73 @@ function buildAssessment(assessment) {
     item.appendChild(title);
     item.appendChild(due);
     item.appendChild(bar);
-    item.appendChild(control);
+    item.appendChild(percent);
+    item.appendChild(checklist);
+    item.appendChild(addStepForm);
     item.appendChild(actions);
     return item;
 }
+// gets one assessment's steps and puts them in its card's list
+async function loadChecklist(assessment, checklist) {
+    const result = await api.getChecklist(assessment.id);
+    if (!result.ok) {
+        assessmentMessage.textContent = result.error;
+        return;
+    }
 
+    if (result.data.length === 0) {
+        const empty = document.createElement("li");
+        empty.className = "empty-message";
+        empty.textContent = "Add the steps you need to finish this.";
+        checklist.appendChild(empty);
+        return;
+    }
+
+    result.data.forEach(function (step) {
+        const row = document.createElement("li");
+
+        // the tick box goes inside the label, so clicking the words ticks it too
+        const label = document.createElement("label");
+        const tick = document.createElement("input");
+        tick.type = "checkbox";
+        tick.checked = step.done;
+        label.appendChild(tick);
+        label.appendChild(document.createTextNode(" " + step.text));
+
+        tick.addEventListener("change", async function () {
+            const result = await api.tickChecklistItem(step.id, tick.checked);
+            if (!result.ok) {
+                tick.checked = !tick.checked;
+                assessmentMessage.textContent = result.error;
+                return;
+            }
+            loadAssessments();
+        });
+
+        row.appendChild(label);
+        row.appendChild(makeButton("Remove", "small-button", async function () {
+            const result = await api.deleteChecklistItem(step.id);
+            if (!result.ok) {
+                assessmentMessage.textContent = result.error;
+                return;
+            }
+            loadAssessments();
+        }));
+        checklist.appendChild(row);
+    });
+}
 async function editAssessment(assessment) {
-    const newTitle = prompt("Assessment title:", assessment.title);
-    if (newTitle === null || newTitle.trim() === "") {
+    const changes = await askEdit(assessment);
+    if (changes === null) {
         return;
     }
 
-    const newDue = prompt("Due date (write it like 2026-11-14):", assessment.due_date);
-    if (newDue === null) {
-        return;
-    }
-
-    assessment.title = newTitle.trim();
-    assessment.due_date = newDue.trim();
+    assessment.title = changes.title;
+    assessment.due_date = changes.due_date;
     const result = await api.updateAssessment(assessment);
     if (!result.ok) {
         assessmentMessage.textContent = result.error;
+        return;
     }
     loadAssessments();
 }

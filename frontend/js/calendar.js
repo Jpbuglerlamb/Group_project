@@ -9,9 +9,7 @@ const calendar = document.querySelector(".calendar"),
   
   eventDay = document.querySelector(".event-day"),
   eventDate = document.querySelector(".event-date"),
-  eventsContainer = document.querySelector(".events"),
-  addEventBtn = document.querySelector(".add-event-btn"),
-  assignmentTitleInput = document.querySelector(".assignment-title");
+  eventsContainer = document.querySelector(".events");
 
 let today = new Date();
 let activeDay;
@@ -155,71 +153,55 @@ function gotoDate() {
 
 
 
+// fills the right-hand panel with every assessment due in the month on screen
 function updateAssignmentsSidebar() {
-    if (!activeDay) activeDay = today.getDate();
-    
-    const selectedDate = new Date(year, month, activeDay);
-    const dayName = selectedDate.toLocaleDateString("en-US", { weekday: "long" });
-    
-    if (eventDay) eventDay.innerHTML = dayName;
-    if (eventDate) eventDate.innerHTML = activeDay + " " + months[month] + " " + year;
-    
-    let listHTML = "";
-    assignmentsArr.forEach((obj) => {
-        if (obj.day === activeDay && obj.month === month && obj.year === year) {
-            obj.assignments.forEach((task) => {
-                listHTML += `<div class="event"><div class="title">${task}</div></div>`;
-            });
-        }
-    });
-    
-    if (listHTML === "") {
-        listHTML = `<div class="no-event">No Assignments</div>`;
+    // heading: the month and year, e.g. "November" and "2026"
+    eventDay.textContent = months[month];
+    eventDate.textContent = year;
+
+    // the days in this month that have assessments, in date order
+    const daysThisMonth = assignmentsArr
+        .filter((obj) => obj.month === month && obj.year === year)
+        .sort((a, b) => a.day - b.day);
+
+    // empty the panel before filling it again
+    eventsContainer.innerHTML = "";
+
+    if (daysThisMonth.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "no-event";
+        empty.textContent = "Nothing due this month";
+        eventsContainer.appendChild(empty);
+        return;
     }
-    
-    if (eventsContainer) eventsContainer.innerHTML = listHTML;
-}
 
+    daysThisMonth.forEach((obj) => {
+        // short day name, e.g. "Thu"
+        const dayName = new Date(year, month, obj.day).toLocaleDateString("en-GB", { weekday: "short" });
 
-daysContainer.addEventListener("click", (e) => {
-    if (e.target.classList.contains("day") && !e.target.classList.contains("prev-date") && !e.target.classList.contains("next-date")) {
-        activeDay = parseInt(e.target.getAttribute("data-day"));
-        
-        document.querySelectorAll(".day").forEach((day) => day.classList.remove("active"));
-        e.target.classList.add("active");
-        
-        updateAssignmentsSidebar();
-    }
-});
+        obj.assignments.forEach((task) => {
+            const item = document.createElement("div");
+            item.className = "event";
 
+            const title = document.createElement("div");
+            title.className = "title";
+            title.textContent = dayName + " " + obj.day + " – " + task.label;
 
-if (addEventBtn) {
-    addEventBtn.addEventListener("click", () => {
-        const taskTitle = assignmentTitleInput.value.trim();
-        if (taskTitle === "") return;
-
-        let dayFound = false;
-        assignmentsArr.forEach((obj) => {
-            if (obj.day === activeDay && obj.month === month && obj.year === year) {
-                obj.assignments.push(taskTitle);
-                dayFound = true;
+            if (task.done) {
+                item.classList.add("done");
+                title.textContent += " ✓ Done";
             }
-        });
-
-        if (!dayFound) {
-            assignmentsArr.push({
-                day: activeDay,
-                month: month,
-                year: year,
-                assignments: [taskTitle]
+            item.addEventListener("click", () => {
+                if (typeof showAssessment == "function") {
+                    showAssessment(task.semester, task.classId, task.id);
+                }
             });
-        }
-
-        assignmentTitleInput.value = "";
-        updateAssignmentsSidebar();
-        initCalendar(); 
+            item.appendChild(title);
+            eventsContainer.appendChild(item);
+        });
     });
 }
+
 
 activeDay = today.getDate();
 updateAssignmentsSidebar();
@@ -237,18 +219,24 @@ async function loadCalendarAssessments() {
         const dueYear = Number(parts[0]);
         const dueMonth = Number(parts[1]) - 1;
         const dueDay = Number(parts[2]);
-        const label = assessment.class_name + ": " + assessment.title;
+        const task = {
+            label: assessment.class_name + ": " + assessment.title,
+            done: assessment.progress === 100,
+            id: assessment.id,
+            classId: assessment.subject_id,
+            semester: assessment.semester_id
+        };
 
         let dayFound = false;
         assignmentsArr.forEach((obj) => {
             if (obj.day === dueDay && obj.month === dueMonth && obj.year === dueYear) {
-                obj.assignments.push(label);
+                obj.assignments.push(task);
                 dayFound = true;
             }
         });
 
         if (!dayFound) {
-            assignmentsArr.push({ day: dueDay, month: dueMonth, year: dueYear, assignments: [label] });
+            assignmentsArr.push({ day: dueDay, month: dueMonth, year: dueYear, assignments: [task] });
         }
     });
 

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <title>Study Planner</title>
 </head>
 <body>
@@ -87,6 +89,45 @@
                 </div>
             </div>
         </div>
+        <div class="calendar-container">
+            <div class="left">
+                <div class="calendar">
+                    <div class="month">
+                        <i class="fa fa-angle-left prev"></i>
+                        <div class="date"></div>
+                        <i class="fa fa-angle-right next"></i>
+                    </div>
+                    <div class="weekdays">
+                        <div>sun</div>
+                        <div>mon</div>
+                        <div>tue</div>
+                        <div>wed</div>
+                        <div>thu</div>
+                        <div>fri</div>
+                        <div>sat</div>
+                    </div>
+                    <div class="days">
+                        <!-- days in js -->
+                    </div>
+                    <div class="goto-today">
+                        <div class="goto">
+                            <input type="text" placeholder="mm/yyyy" class="date-input">
+                            <button class="goto-btn">go</button>
+                        </div>
+                        <button class="today-btn">today</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right">
+                <div class="today-date">
+                    <div class="event-day"></div>
+                    <div class="event-date"></div>
+                </div>
+                <div class="events">
+                </div>
+            </div>
+        </div>
     </main>
     <footer class="site-footer">
         <div class="footer-content">
@@ -110,8 +151,22 @@
         <button type="button" id="confirm-cancel">Cancel</button>
         <button type="button" id="confirm-ok">Ok</button>
     </dialog>
+    <dialog id="edit-dialog">
+        <form class="add-form" method="dialog">
+            <h3>Edit assessment</h3>
+            <label for="edit-title">Title</label>
+            <input type="text" id="edit-title" required>
+            <label for="edit-due">Due date</label>
+            <input type="date" id="edit-due" required>
+            <div class="dialog-buttons">
+                <button type="button" id="edit-cancel">Cancel</button>
+                <button type="submit" value="save">Save</button>
+            </div>
+        </form>
+    </dialog>
     <script src="js/clock.js"></script>
     <script src="js/demo-api.js"></script>
     <script src="js/script.js"></script>
+    <script src="js/calendar.js"></script>
 </body>
 </html>

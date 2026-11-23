@@ -18,9 +18,62 @@ const demoAssessments = [
     { id: 4, classId: 3, title: "Teamwork Report", due_date: "2026-12-11", progress: 0 },
     { id: 5, classId: 5, title: "Project Presentation", due_date: "2027-03-18", progress: 10 }
 ];
+// example steps: each assessment's progress is worked out from these
+const demoChecklist = [
+    { id: 1, assessmentId: 1, text: "Plan the site map", done: true },
+    { id: 2, assessmentId: 1, text: "Build the pages", done: true },
+    { id: 3, assessmentId: 1, text: "Add the CSS", done: true },
+    { id: 4, assessmentId: 1, text: "Test on a phone", done: false },
+    { id: 5, assessmentId: 1, text: "Submit", done: false },
+    { id: 6, assessmentId: 2, text: "Revise notes", done: true },
+    { id: 7, assessmentId: 2, text: "Practice questions", done: false },
+    { id: 8, assessmentId: 2, text: "Sit the assessment", done: false },
+    { id: 9, assessmentId: 3, text: "Revise JOINs", done: true },
+    { id: 10, assessmentId: 3, text: "Practice queries", done: false },
+    { id: 11, assessmentId: 4, text: "Write the introduction", done: false },
+    { id: 12, assessmentId: 4, text: "Collect evidence", done: false }
+];
 
 let nextClassId = 6;
 let nextAssessmentId = 6;
+let nextChecklistId = 13;
+
+// works out an assessment's progress from its ticked steps (same as update_progress in app.py)
+function demoUpdateProgress(assessmentId) {
+    const steps = demoChecklist.filter(function (step) {
+        return step.assessmentId === assessmentId;
+    });
+    const ticked = steps.filter(function (step) {
+        return step.done;
+    }).length;
+
+    let progress = 0;
+    if (steps.length > 0) {
+        progress = Math.round(ticked * 100 / steps.length);
+    }
+
+    const assessment = demoAssessments.find(function (item) {
+        return item.id === assessmentId;
+    });
+    if (assessment !== undefined) {
+        assessment.progress = progress;
+    }
+    return progress;
+}
+
+// removes all of one assessment's steps (when the assessment or its class is deleted)
+function removeDemoSteps(assessmentId) {
+    for (let i = demoChecklist.length - 1; i >= 0; i--) {
+        if (demoChecklist[i].assessmentId === assessmentId) {
+            demoChecklist.splice(i, 1);
+        }
+    }
+}
+
+// make the example progress match the example steps
+demoAssessments.forEach(function (assessment) {
+    demoUpdateProgress(assessment.id);
+});
 
 function demoSuccess(data) {
     return { ok: true, data: data };
@@ -87,6 +140,7 @@ const api = {
         // remove its assessments too, working backwards so removing one doesn't skip the next
         for (let i = demoAssessments.length - 1; i >= 0; i--) {
             if (demoAssessments[i].classId === classId) {
+                removeDemoSteps(demoAssessments[i].id);
                 demoAssessments.splice(i, 1);
             }
         }
@@ -129,7 +183,6 @@ const api = {
         }
         assessment.title = changed.title;
         assessment.due_date = changed.due_date;
-        assessment.progress = changed.progress;
         return demoSuccess({});
     },
 
@@ -140,7 +193,61 @@ const api = {
         if (index === -1) {
             return demoError("Assessment not found");
         }
+        removeDemoSteps(assessmentId);
         demoAssessments.splice(index, 1);
         return demoSuccess({});
+    },
+    getAllAssessments: async function () {
+        const assessments = demoAssessments.map(function (assessment) {
+            return {
+                id: assessment.id,
+                title: assessment.title,
+                due_date: assessment.due_date,
+                progress: assessment.progress,
+                class_name: findDemoClass(assessment.classId).name,
+                subject_id: assessment.classId,
+                semester_id: findDemoClass(assessment.classId).semester
+            };
+        });
+        assessments.sort(function (a, b) { return a.due_date.localeCompare(b.due_date); });
+        return demoSuccess(assessments);
+    },
+    getChecklist: async function (assessmentId) {
+        const steps = demoChecklist
+            .filter(function (step) { return step.assessmentId === assessmentId; })
+            .map(function (step) { return { id: step.id, text: step.text, done: step.done }; });
+        return demoSuccess(steps);
+    },
+
+    addChecklistItem: async function (assessmentId, text) {
+        if (text === "") {
+            return demoError("Please type a step");
+        }
+        demoChecklist.push({ id: nextChecklistId, assessmentId: assessmentId, text: text, done: false });
+        nextChecklistId = nextChecklistId + 1;
+        return demoSuccess({ progress: demoUpdateProgress(assessmentId) });
+    },
+
+    tickChecklistItem: async function (itemId, done) {
+        const step = demoChecklist.find(function (item) {
+            return item.id === itemId;
+        });
+        if (step === undefined) {
+            return demoError("Step not found");
+        }
+        step.done = done;
+        return demoSuccess({ progress: demoUpdateProgress(step.assessmentId) });
+    },
+
+    deleteChecklistItem: async function (itemId) {
+        const index = demoChecklist.findIndex(function (item) {
+            return item.id === itemId;
+        });
+        if (index === -1) {
+            return demoError("Step not found");
+        }
+        const assessmentId = demoChecklist[index].assessmentId;
+        demoChecklist.splice(index, 1);
+        return demoSuccess({ progress: demoUpdateProgress(assessmentId) });
     }
 };

@@ -260,7 +260,7 @@
     margin-top: auto;
     border-radius: 5px;
     background-color: #dfc3bf;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
 }
 .right .add-event-wrapper .add-event-title {
     font-size: 1.1rem;
@@ -290,12 +290,23 @@
 .right .add-event-wrapper .add-event-btn:hover {
     opacity: 0.9;
 }
+.right .events .event.done .title {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+/* hand pointer: each assessment in the month list can be clicked */
+.right .events .event {
+    cursor: pointer;
+}
 
 @media screen and (max-width: 850px) {
     .calendar-container {
         flex-direction: column;
         height: auto;
         min-height: 0;
+        width: auto;
+        margin: 40px 20px 0;
     }
     .left, .right {
         width: 100%;
@@ -309,5 +320,40 @@
     }
     .right .events {
         max-height: 300px;
+    }
+}
+/* phones: less spacing and smaller text, so all 7 columns fit */
+@media screen and (max-width: 500px) {
+    .calendar-container {
+        margin: 30px 10px 0;
+    }
+    .left,
+    .right {
+        padding: 10px;
+    }
+    .calendar .month {
+        height: 70px;
+        padding: 0 20px;
+    }
+    .calendar .weekdays {
+        height: 40px;
+        padding: 0 8px;
+        font-size: 0.8rem;
+    }
+    .calendar .days {
+        padding: 0 8px;
+    }
+    .calendar .days .day {
+        height: 48px;
+        font-size: 0.9rem;
+    }
+    .calendar .days .active,
+    .calendar .days .today {
+        font-size: 1.1rem;
+    }
+    .calendar .days .day.assignment::after {
+        width: 6px;
+        height: 6px;
+        bottom: 6%;
     }
 }

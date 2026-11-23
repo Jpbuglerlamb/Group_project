@@ -50,11 +50,22 @@ const api = {
     updateAssessment: function (assessment) {
         return request(`/api/assessments/${assessment.id}`, "PUT", {
             title: assessment.title,
-            due_date: assessment.due_date,
-            progress: assessment.progress
+            due_date: assessment.due_date
         });
     },
     deleteAssessment: function (assessmentId) {
         return request(`/api/assessments/${assessmentId}`, "DELETE");
+    },
+        getChecklist: function (assessmentId) {
+        return request(`/api/assessments/${assessmentId}/checklist`, "GET");
+    },
+    addChecklistItem: function (assessmentId, text) {
+        return request(`/api/assessments/${assessmentId}/checklist`, "POST", { text: text });
+    },
+    tickChecklistItem: function (itemId, done) {
+        return request(`/api/checklist/${itemId}`, "PUT", { done: done });
+    },
+    deleteChecklistItem: function (itemId) {
+        return request(`/api/checklist/${itemId}`, "DELETE");
     }
 };

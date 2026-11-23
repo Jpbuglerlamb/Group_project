@@ -125,13 +125,6 @@
                 <div class="events">
 
                 </div>
-                <div class="add-event-wrapper">
-                    <div class="add-event-title">Add Assignment</div>
-                    <div class="add-event-input">
-                        <input type="text" placeholder="Assignment Title" class="assignment-title" />
-                    </div>
-                    <button class="add-event-btn">Add</button>
-                </div>
             </div>
         </div>
     </main>
@@ -152,6 +145,24 @@
             &copy; 2026 Study Planner
         </div>
     </footer>
+    <dialog id="confirm-dialog">
+        <p id="confirm-text"></p>
+        <button type="button" id="confirm-cancel">Cancel</button>
+        <button type="button" id="confirm-ok">Ok</button>
+    </dialog>
+    <dialog id="edit-dialog">
+        <form class="add-form" method="dialog">
+            <h3>Edit assessment</h3>
+            <label for="edit-title">Title</label>
+            <input type="text" id="edit-title" required>
+            <label for="edit-due">Due date</label>
+            <input type="date" id="edit-due" required>
+            <div class="dialog-buttons">
+                <button type="button" id="edit-cancel">Cancel</button>
+                <button type="submit" value="save">Save</button>
+            </div>
+        </form>
+    </dialog>
     <script src="js/clock.js"></script>
     <script src="js/api.js"></script>
     <script src="js/script.js"></script>
