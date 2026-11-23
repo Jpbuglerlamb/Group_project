@@ -152,7 +152,6 @@ The pages `/` (the demo) and `/home.html` (the planner, logged-in users only) ar
 - The calendar's side panel shows assessment titles with `innerHTML`: switch it to `textContent` like the planner
 - Update the calendar straight away when an assessment is added, edited or deleted (at the moment it updates when the page reloads)
 - Remove the calendar's own "Add Assignment" box, since assessments are now added in the planner
-- Decide what to do with the separate `calendar.html` page, now that the calendar is under the planner
 - Design and styling improvements
 - Letting a signed-in user open their planner from the public home page
 
