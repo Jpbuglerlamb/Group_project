@@ -182,6 +182,9 @@ function updateAssignmentsSidebar() {
         obj.assignments.forEach((task) => {
             const item = document.createElement("div");
             item.className = "event";
+            if (obj.day === activeDay) {
+                item.classList.add("selected-day");
+            }
 
             const title = document.createElement("div");
             title.className = "title";
@@ -201,6 +204,16 @@ function updateAssignmentsSidebar() {
         });
     });
 }
+// clicking a day selects it, and its assessments stand out in the month list
+daysContainer.addEventListener("click", (e) => {
+    const dayBox = e.target.closest(".day");
+    if (dayBox === null || !dayBox.dataset.day) {
+        return;
+    }
+    activeDay = Number(dayBox.dataset.day);
+    initCalendar();
+    updateAssignmentsSidebar();
+});
 
 
 activeDay = today.getDate();

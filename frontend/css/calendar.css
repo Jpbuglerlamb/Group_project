@@ -299,6 +299,9 @@
 .right .events .event {
     cursor: pointer;
 }
+.right .events .event.selected-day {
+    outline: 3px solid var(--primary-clr);
+}
 
 @media screen and (max-width: 850px) {
     .calendar-container {
