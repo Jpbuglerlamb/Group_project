@@ -17,7 +17,43 @@ def is_valid_date(text):
     except (TypeError, ValueError):
         return False
 
+def owns_assessment(connection, assessment_id):
+    """True if this assessment belongs to the logged-in user."""
+    row = connection.execute("""
+        SELECT assessments.id FROM assessments
+        JOIN subjects ON assessments.subject_id = subjects.id
+        WHERE assessments.id = ? AND subjects.user_id = ?
+    """, (assessment_id, session["user_id"])).fetchone()
+    return row is not None
 
+
+def find_item_assessment(connection, item_id):
+    """The assessment id a checklist step belongs to, or None if it isn't the logged-in user's."""
+    row = connection.execute("""
+        SELECT checklist_items.assessment_id FROM checklist_items
+        JOIN assessments ON checklist_items.assessment_id = assessments.id
+        JOIN subjects ON assessments.subject_id = subjects.id
+        WHERE checklist_items.id = ? AND subjects.user_id = ?
+    """, (item_id, session["user_id"])).fetchone()
+    if row is None:
+        return None
+    return row[0]
+
+
+def update_progress(connection, assessment_id):
+    """Works out progress from the ticked steps, saves it, and gives it back."""
+    total, done = connection.execute("""
+        SELECT COUNT(*), COALESCE(SUM(done), 0)
+        FROM checklist_items WHERE assessment_id = ?
+    """, (assessment_id,)).fetchone()
+
+    if total == 0:
+        progress = 0
+    else:
+        progress = round(done * 100 / total)
+
+    connection.execute("UPDATE assessments SET progress = ? WHERE id = ?", (progress, assessment_id))
+    return progress
 # =========================
 # PAGES
 # =========================
@@ -184,7 +220,10 @@ def delete_subject(subject_id):
         return jsonify({"error": "Class not found"}), 404
 
     # its assessments go first, because they point at the class (foreign key)
-    connection.execute("DELETE FROM assessments WHERE subject_id = ?", (subject_id,))
+    # its assessments' steps go first of all, because they point at the assessments
+    connection.execute(
+        "DELETE FROM checklist_items WHERE assessment_id IN (SELECT id FROM assessments WHERE subject_id = ?)",
+        (subject_id,))
     connection.execute("DELETE FROM subjects WHERE id = ?", (subject_id,))
     connection.commit()
     connection.close()
@@ -221,7 +260,7 @@ def get_all_assessments():
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     rows = connection.execute("""
-        SELECT assessments.id, assessments.title, assessments.due_date, assessments.progress, subjects.name AS class_name
+        SELECT assessments.id, assessments.title, assessments.due_date, assessments.progress, assessments.subject_id, subjects.semester_id, subjects.name AS class_name
         FROM assessments
         JOIN subjects ON assessments.subject_id = subjects.id
         WHERE subjects.user_id = ?
@@ -270,20 +309,17 @@ def update_assessment(assessment_id):
     data = request.get_json()
     title = (data.get("title") or "").strip()
     due_date = data.get("due_date")
-    progress = data.get("progress")
     if title == "":
         return jsonify({"error": "Please type a title"}), 400
     if not is_valid_date(due_date):
         return jsonify({"error": "Please write the date like 2026-11-14"}), 400
-    if not isinstance(progress, int) or progress < 0 or progress > 100:
-        return jsonify({"error": "Progress must be a number from 0 to 100"}), 400
 
     connection = sqlite3.connect(DB_PATH)
     # only change it if its class belongs to the logged-in user
     cursor = connection.execute("""
-        UPDATE assessments SET title = ?, due_date = ?, progress = ?
+        UPDATE assessments SET title = ?, due_date = ?
         WHERE id = ? AND subject_id IN (SELECT id FROM subjects WHERE user_id = ?)
-    """, (title, due_date, progress, assessment_id, session["user_id"]))
+    """, (title, due_date, assessment_id, session["user_id"]))
     connection.commit()
     connection.close()
 
@@ -298,17 +334,103 @@ def delete_assessment(assessment_id):
         return jsonify({"error": "Not logged in"}), 401
 
     connection = sqlite3.connect(DB_PATH)
-    cursor = connection.execute("""
-        DELETE FROM assessments
-        WHERE id = ? AND subject_id IN (SELECT id FROM subjects WHERE user_id = ?)
-    """, (assessment_id, session["user_id"]))
+    if not owns_assessment(connection, assessment_id):
+        connection.close()
+        return jsonify({"error": "Assessment not found"}), 404
+
+    connection.execute("DELETE FROM checklist_items WHERE assessment_id = ?", (assessment_id,))
+    connection.execute("DELETE FROM assessments WHERE id = ?", (assessment_id,))
     connection.commit()
     connection.close()
-
-    if cursor.rowcount == 0:
-        return jsonify({"error": "Assessment not found"}), 404
     return jsonify({"message": "Assessment deleted"})
 
+# =========================
+# CHECKLIST
+# =========================
+
+@app.route("/api/assessments/<int:assessment_id>/checklist")
+def get_checklist(assessment_id):
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    if not owns_assessment(connection, assessment_id):
+        connection.close()
+        return jsonify({"error": "Assessment not found"}), 404
+
+    rows = connection.execute(
+        "SELECT id, text, done FROM checklist_items WHERE assessment_id = ? ORDER BY id",
+        (assessment_id,)
+    ).fetchall()
+    connection.close()
+    return jsonify([{"id": row["id"], "text": row["text"], "done": row["done"] == 1} for row in rows])
+
+
+@app.route("/api/assessments/<int:assessment_id>/checklist", methods=["POST"])
+def add_checklist_item(assessment_id):
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+
+    data = request.get_json()
+    text = (data.get("text") or "").strip()
+    if text == "":
+        return jsonify({"error": "Please type a step"}), 400
+
+    connection = sqlite3.connect(DB_PATH)
+    if not owns_assessment(connection, assessment_id):
+        connection.close()
+        return jsonify({"error": "Assessment not found"}), 404
+
+    connection.execute(
+        "INSERT INTO checklist_items (assessment_id, text) VALUES (?, ?)",
+        (assessment_id, text)
+    )
+    progress = update_progress(connection, assessment_id)
+    connection.commit()
+    connection.close()
+    return jsonify({"message": "Step added", "progress": progress}), 201
+
+
+@app.route("/api/checklist/<int:item_id>", methods=["PUT"])
+def tick_checklist_item(item_id):
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+
+    data = request.get_json()
+    done = data.get("done")
+    if not isinstance(done, bool):
+        return jsonify({"error": "done must be true or false"}), 400
+
+    connection = sqlite3.connect(DB_PATH)
+    assessment_id = find_item_assessment(connection, item_id)
+    if assessment_id is None:
+        connection.close()
+        return jsonify({"error": "Step not found"}), 404
+
+    connection.execute("UPDATE checklist_items SET done = ? WHERE id = ?", (1 if done else 0, item_id))
+    progress = update_progress(connection, assessment_id)
+    connection.commit()
+    connection.close()
+    return jsonify({"message": "Step updated", "progress": progress})
+
+
+@app.route("/api/checklist/<int:item_id>", methods=["DELETE"])
+def delete_checklist_item(item_id):
+    if "user_id" not in session:
+        return jsonify({"error": "Not logged in"}), 401
+
+    connection = sqlite3.connect(DB_PATH)
+    assessment_id = find_item_assessment(connection, item_id)
+    if assessment_id is None:
+        connection.close()
+        return jsonify({"error": "Step not found"}), 404
+
+    connection.execute("DELETE FROM checklist_items WHERE id = ?", (item_id,))
+    progress = update_progress(connection, assessment_id)
+    connection.commit()
+    connection.close()
+    return jsonify({"message": "Step deleted", "progress": progress})
 
 if __name__ == "__main__":
     app.run(debug=True)

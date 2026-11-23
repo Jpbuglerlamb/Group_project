@@ -41,5 +41,14 @@ cursor.execute("""
         FOREIGN KEY (subject_id) REFERENCES subjects (id)
     )
 """)
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS checklist_items (
+        id INTEGER PRIMARY KEY,
+        assessment_id INTEGER NOT NULL,
+        text TEXT NOT NULL,
+        done INTEGER NOT NULL DEFAULT 0,
+        FOREIGN KEY (assessment_id) REFERENCES assessments (id)
+    )
+""")
 connection.commit()
 connection.close()
