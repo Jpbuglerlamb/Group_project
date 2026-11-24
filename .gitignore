@@ -6,3 +6,4 @@ __pycache__/
 backend/study_planner.db
 frontend/css/style1.css
 frontend/images/TP-logos-da.png
+.env

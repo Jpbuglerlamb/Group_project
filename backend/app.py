@@ -1,12 +1,20 @@
 import os
-import sqlite3
+import psycopg
+from psycopg.rows import dict_row
+from dotenv import load_dotenv
 from datetime import date
 from flask import Flask, jsonify, request, session, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__, static_folder="../frontend", static_url_path="")
-app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")
-DB_PATH = os.path.join(os.path.dirname(__file__), "study_planner.db")
+app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")# reads backend/.env on your Mac; on Render the setting comes from the dashboard instead
+load_dotenv()
+DATABASE_URL = os.environ["DATABASE_URL"]
+
+
+def connect():
+    """Opens a connection to the Supabase database. Each row comes back as a dictionary."""
+    return psycopg.connect(DATABASE_URL, row_factory=dict_row)
 
 
 def is_valid_date(text):
@@ -22,7 +30,7 @@ def owns_assessment(connection, assessment_id):
     row = connection.execute("""
         SELECT assessments.id FROM assessments
         JOIN subjects ON assessments.subject_id = subjects.id
-        WHERE assessments.id = ? AND subjects.user_id = ?
+        WHERE assessments.id = %s AND subjects.user_id = %s
     """, (assessment_id, session["user_id"])).fetchone()
     return row is not None
 
@@ -33,26 +41,28 @@ def find_item_assessment(connection, item_id):
         SELECT checklist_items.assessment_id FROM checklist_items
         JOIN assessments ON checklist_items.assessment_id = assessments.id
         JOIN subjects ON assessments.subject_id = subjects.id
-        WHERE checklist_items.id = ? AND subjects.user_id = ?
+        WHERE checklist_items.id = %s AND subjects.user_id = %s
     """, (item_id, session["user_id"])).fetchone()
     if row is None:
         return None
-    return row[0]
+    return row["assessment_id"]
 
 
 def update_progress(connection, assessment_id):
     """Works out progress from the ticked steps, saves it, and gives it back."""
-    total, done = connection.execute("""
-        SELECT COUNT(*), COALESCE(SUM(done), 0)
-        FROM checklist_items WHERE assessment_id = ?
+    counts = connection.execute("""
+        SELECT COUNT(*) AS total, COALESCE(SUM(done), 0) AS done
+        FROM checklist_items WHERE assessment_id = %s
     """, (assessment_id,)).fetchone()
+    total = counts["total"]
+    done = counts["done"]
 
     if total == 0:
         progress = 0
     else:
         progress = round(done * 100 / total)
 
-    connection.execute("UPDATE assessments SET progress = ? WHERE id = ?", (progress, assessment_id))
+    connection.execute("UPDATE assessments SET progress = %s WHERE id = %s", (progress, assessment_id))
     return progress
 # =========================
 # PAGES
@@ -79,21 +89,21 @@ def signup():
     data = request.get_json()
     password_hash = generate_password_hash(data["password"])
 
-    connection = sqlite3.connect(DB_PATH)
+    connection = connect()
     try:
-        cursor = connection.execute(
-            "INSERT INTO users (username, full_name, phone, email, password_hash) VALUES (?, ?, ?, ?, ?)",
+        new_user = connection.execute(
+            "INSERT INTO users (username, full_name, phone, email, password_hash) VALUES (%s, %s, %s, %s, %s) RETURNING id",
             (data["username"], data["full_name"], data["phone"], data["email"], password_hash)
-        )
+        ).fetchone()
         connection.commit()
-    except sqlite3.IntegrityError:
+    except psycopg.IntegrityError:
         connection.close()
         return jsonify({"error": "That username or email already exists"}), 409
 
     connection.close()
 
     # log the new user straight in, so they can go to home.html
-    session["user_id"] = cursor.lastrowid
+    session["user_id"] = new_user["id"]
     session["username"] = data["username"]
     return jsonify({"message": "Account created"}), 201
 
@@ -102,10 +112,9 @@ def signup():
 def login():
     data = request.get_json()
 
-    connection = sqlite3.connect(DB_PATH)
-    connection.row_factory = sqlite3.Row
+    connection = connect()
     user = connection.execute(
-        "SELECT id, username, password_hash FROM users WHERE username = ?",
+        "SELECT id, username, password_hash FROM users WHERE username = %s",
         (data["username"],)
     ).fetchone()
     connection.close()
@@ -140,10 +149,9 @@ def get_subjects(number):
     if "user_id" not in session:
         return jsonify({"error": "Not logged in"}), 401
 
-    connection = sqlite3.connect(DB_PATH)
-    connection.row_factory = sqlite3.Row
+    connection = connect()
     rows = connection.execute(
-        "SELECT id, name FROM subjects WHERE semester_id = ? AND user_id = ? ORDER BY name",
+        "SELECT id, name FROM subjects WHERE semester_id = %s AND user_id = %s ORDER BY name",
         (number, session["user_id"])
     ).fetchall()
     connection.close()
@@ -160,15 +168,14 @@ def add_subject():
     if name == "":
         return jsonify({"error": "Please type a class name"}), 400
 
-    connection = sqlite3.connect(DB_PATH)
-    connection.execute("PRAGMA foreign_keys = ON")
+    connection = connect()
     try:
         connection.execute(
-            "INSERT INTO subjects (name, semester_id, user_id) VALUES (?, ?, ?)",
+            "INSERT INTO subjects (name, semester_id, user_id) VALUES (%s, %s, %s)",
             (name, data["semester_id"], session["user_id"])
         )
         connection.commit()
-    except sqlite3.IntegrityError:
+    except psycopg.IntegrityError:
         connection.close()
         return jsonify({"error": "You already have a class with that name"}), 409
 
@@ -186,14 +193,14 @@ def rename_subject(subject_id):
     if name == "":
         return jsonify({"error": "Please type a class name"}), 400
 
-    connection = sqlite3.connect(DB_PATH)
+    connection = connect()
     try:
         cursor = connection.execute(
-            "UPDATE subjects SET name = ? WHERE id = ? AND user_id = ?",
+            "UPDATE subjects SET name = %s WHERE id = %s AND user_id = %s",
             (name, subject_id, session["user_id"])
         )
         connection.commit()
-    except sqlite3.IntegrityError:
+    except psycopg.IntegrityError:
         connection.close()
         return jsonify({"error": "You already have a class with that name"}), 409
 
@@ -209,22 +216,22 @@ def delete_subject(subject_id):
     if "user_id" not in session:
         return jsonify({"error": "Not logged in"}), 401
 
-    connection = sqlite3.connect(DB_PATH)
-    connection.execute("PRAGMA foreign_keys = ON")
+    connection = connect()
     subject = connection.execute(
-        "SELECT id FROM subjects WHERE id = ? AND user_id = ?",
+        "SELECT id FROM subjects WHERE id = %s AND user_id = %s",
         (subject_id, session["user_id"])
     ).fetchone()
     if subject is None:
         connection.close()
         return jsonify({"error": "Class not found"}), 404
 
-    # its assessments go first, because they point at the class (foreign key)
     # its assessments' steps go first of all, because they point at the assessments
     connection.execute(
-        "DELETE FROM checklist_items WHERE assessment_id IN (SELECT id FROM assessments WHERE subject_id = ?)",
+        "DELETE FROM checklist_items WHERE assessment_id IN (SELECT id FROM assessments WHERE subject_id = %s)",
         (subject_id,))
-    connection.execute("DELETE FROM subjects WHERE id = ?", (subject_id,))
+    # then its assessments, because they point at the class (foreign key)
+    connection.execute("DELETE FROM assessments WHERE subject_id = %s", (subject_id,))
+    connection.execute("DELETE FROM subjects WHERE id = %s", (subject_id,))
     connection.commit()
     connection.close()
     return jsonify({"message": "Class deleted"})
@@ -240,13 +247,12 @@ def get_assessments(subject_id):
     if "user_id" not in session:
         return jsonify({"error": "Not logged in"}), 401
 
-    connection = sqlite3.connect(DB_PATH)
-    connection.row_factory = sqlite3.Row
+    connection = connect()
     rows = connection.execute("""
         SELECT assessments.id, assessments.title, assessments.due_date, assessments.progress
         FROM assessments
         JOIN subjects ON assessments.subject_id = subjects.id
-        WHERE subjects.id = ? AND subjects.user_id = ?
+        WHERE subjects.id = %s AND subjects.user_id = %s
         ORDER BY assessments.due_date
     """, (subject_id, session["user_id"])).fetchall()
     connection.close()
@@ -257,13 +263,12 @@ def get_all_assessments():
     if "user_id" not in session:
         return jsonify({"error": "Not logged in"}), 401
 
-    connection = sqlite3.connect(DB_PATH)
-    connection.row_factory = sqlite3.Row
+    connection = connect()
     rows = connection.execute("""
         SELECT assessments.id, assessments.title, assessments.due_date, assessments.progress, assessments.subject_id, subjects.semester_id, subjects.name AS class_name
         FROM assessments
         JOIN subjects ON assessments.subject_id = subjects.id
-        WHERE subjects.user_id = ?
+        WHERE subjects.user_id = %s
         ORDER BY assessments.due_date
     """, (session["user_id"],)).fetchall()
     connection.close()
@@ -282,10 +287,9 @@ def add_assessment():
     if not is_valid_date(due_date):
         return jsonify({"error": "Please pick a due date"}), 400
 
-    connection = sqlite3.connect(DB_PATH)
-    connection.execute("PRAGMA foreign_keys = ON")
+    connection = connect()
     subject = connection.execute(
-        "SELECT id FROM subjects WHERE id = ? AND user_id = ?",
+        "SELECT id FROM subjects WHERE id = %s AND user_id = %s",
         (data.get("subject_id"), session["user_id"])
     ).fetchone()
     if subject is None:
@@ -293,8 +297,8 @@ def add_assessment():
         return jsonify({"error": "Class not found"}), 404
 
     connection.execute(
-        "INSERT INTO assessments (subject_id, title, due_date) VALUES (?, ?, ?)",
-        (subject[0], title, due_date)
+        "INSERT INTO assessments (subject_id, title, due_date) VALUES (%s, %s, %s)",
+        (subject["id"], title, due_date)
     )
     connection.commit()
     connection.close()
@@ -314,11 +318,11 @@ def update_assessment(assessment_id):
     if not is_valid_date(due_date):
         return jsonify({"error": "Please write the date like 2026-11-14"}), 400
 
-    connection = sqlite3.connect(DB_PATH)
+    connection = connect()
     # only change it if its class belongs to the logged-in user
     cursor = connection.execute("""
-        UPDATE assessments SET title = ?, due_date = ?
-        WHERE id = ? AND subject_id IN (SELECT id FROM subjects WHERE user_id = ?)
+        UPDATE assessments SET title = %s, due_date = %s
+        WHERE id = %s AND subject_id IN (SELECT id FROM subjects WHERE user_id = %s)
     """, (title, due_date, assessment_id, session["user_id"]))
     connection.commit()
     connection.close()
@@ -333,13 +337,13 @@ def delete_assessment(assessment_id):
     if "user_id" not in session:
         return jsonify({"error": "Not logged in"}), 401
 
-    connection = sqlite3.connect(DB_PATH)
+    connection = connect()
     if not owns_assessment(connection, assessment_id):
         connection.close()
         return jsonify({"error": "Assessment not found"}), 404
 
-    connection.execute("DELETE FROM checklist_items WHERE assessment_id = ?", (assessment_id,))
-    connection.execute("DELETE FROM assessments WHERE id = ?", (assessment_id,))
+    connection.execute("DELETE FROM checklist_items WHERE assessment_id = %s", (assessment_id,))
+    connection.execute("DELETE FROM assessments WHERE id = %s", (assessment_id,))
     connection.commit()
     connection.close()
     return jsonify({"message": "Assessment deleted"})
@@ -353,14 +357,13 @@ def get_checklist(assessment_id):
     if "user_id" not in session:
         return jsonify({"error": "Not logged in"}), 401
 
-    connection = sqlite3.connect(DB_PATH)
-    connection.row_factory = sqlite3.Row
+    connection = connect()
     if not owns_assessment(connection, assessment_id):
         connection.close()
         return jsonify({"error": "Assessment not found"}), 404
 
     rows = connection.execute(
-        "SELECT id, text, done FROM checklist_items WHERE assessment_id = ? ORDER BY id",
+        "SELECT id, text, done FROM checklist_items WHERE assessment_id = %s ORDER BY id",
         (assessment_id,)
     ).fetchall()
     connection.close()
@@ -377,13 +380,13 @@ def add_checklist_item(assessment_id):
     if text == "":
         return jsonify({"error": "Please type a step"}), 400
 
-    connection = sqlite3.connect(DB_PATH)
+    connection = connect()
     if not owns_assessment(connection, assessment_id):
         connection.close()
         return jsonify({"error": "Assessment not found"}), 404
 
     connection.execute(
-        "INSERT INTO checklist_items (assessment_id, text) VALUES (?, ?)",
+        "INSERT INTO checklist_items (assessment_id, text) VALUES (%s, %s)",
         (assessment_id, text)
     )
     progress = update_progress(connection, assessment_id)
@@ -402,13 +405,13 @@ def tick_checklist_item(item_id):
     if not isinstance(done, bool):
         return jsonify({"error": "done must be true or false"}), 400
 
-    connection = sqlite3.connect(DB_PATH)
+    connection = connect()
     assessment_id = find_item_assessment(connection, item_id)
     if assessment_id is None:
         connection.close()
         return jsonify({"error": "Step not found"}), 404
 
-    connection.execute("UPDATE checklist_items SET done = ? WHERE id = ?", (1 if done else 0, item_id))
+    connection.execute("UPDATE checklist_items SET done = %s WHERE id = %s", (1 if done else 0, item_id))
     progress = update_progress(connection, assessment_id)
     connection.commit()
     connection.close()
@@ -420,13 +423,13 @@ def delete_checklist_item(item_id):
     if "user_id" not in session:
         return jsonify({"error": "Not logged in"}), 401
 
-    connection = sqlite3.connect(DB_PATH)
+    connection = connect()
     assessment_id = find_item_assessment(connection, item_id)
     if assessment_id is None:
         connection.close()
         return jsonify({"error": "Step not found"}), 404
 
-    connection.execute("DELETE FROM checklist_items WHERE id = ?", (item_id,))
+    connection.execute("DELETE FROM checklist_items WHERE id = %s", (item_id,))
     progress = update_progress(connection, assessment_id)
     connection.commit()
     connection.close()
