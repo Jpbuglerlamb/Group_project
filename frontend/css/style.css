@@ -210,6 +210,9 @@ main {
     border-radius: 10px;
     padding-bottom: 15px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    align-self: flex-start;
+    position: sticky;
+    top: 20px;
 }
 
 .semester button {
@@ -240,6 +243,9 @@ main {
     border-radius: 10px;
     padding-bottom: 15px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    align-self: flex-start;
+    position: sticky;
+    top: 20px;
 }
 
 .class-list {
@@ -765,6 +771,7 @@ button:focus {
     .classes,
     .assessment-card {
         width: 100%;
+        position: static;
     }
 
     form {
