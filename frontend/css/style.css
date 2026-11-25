@@ -103,6 +103,14 @@ header .clock {
     font-size: 36px;
     font-weight: bold;
 }
+.welcome {
+    text-align: center;
+    margin: 0 0 30px;
+    transition: opacity 1s;
+}
+.welcome.hide {
+    opacity: 0;
+}
 
 /* =========================
    NAV

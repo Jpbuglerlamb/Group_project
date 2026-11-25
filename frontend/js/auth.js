@@ -15,6 +15,16 @@ async function showUsername() {
 
     const user = await response.json();
     usernameDisplay.textContent = user.username;
+
+    // home.html has a welcome heading; the other pages don't, so check first
+    const welcome = document.getElementById("welcome-message");
+    if (welcome !== null) {
+        const firstName = user.full_name.split(" ")[0];
+        welcome.textContent = "Welcome back, " + firstName + "!";
+        setTimeout(function () {
+            welcome.classList.add("hide");
+        }, 10000);
+    }
     loggedIn = true;
 
     // signed in: links to the public home page go to your planner instead

@@ -131,7 +131,15 @@ def login():
 def me():
     if "user_id" not in session:
         return jsonify({"error": "You are not logged in"}), 401
-    return jsonify({"username": session["username"]})
+
+    connection = connect()
+    user = connection.execute(
+        "SELECT username, full_name FROM users WHERE id = %s",
+        (session["user_id"],)
+    ).fetchone()
+    connection.close()
+
+    return jsonify({"username": user["username"], "full_name": user["full_name"]})
 
 
 @app.route("/api/logout", methods=["POST"])
