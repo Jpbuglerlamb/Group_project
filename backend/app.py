@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 from datetime import date
 from flask import Flask, jsonify, request, session, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 load_dotenv()
 
@@ -15,7 +18,12 @@ app.config["SESSION_COOKIE_SECURE"] = os.environ.get("RENDER") is not None
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)
+limiter = Limiter(get_remote_address, app=app, storage_uri="memory://")
 
+@app.errorhandler(429)
+def too_many_requests(error):
+    return jsonify({"error": "Too many requests. Please wait a minute and try again"}), 429
 
 def connect():
     """Opens a connection to the Supabase database. Each row comes back as a dictionary."""
@@ -90,6 +98,7 @@ def home_page():
 # =========================
 
 @app.route("/api/signup", methods=["POST"])
+@limiter.limit("10 per hour")
 def signup():
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
@@ -99,6 +108,8 @@ def signup():
         value = data.get(field)
         if not isinstance(value, str) or value.strip() == "":
             return jsonify({"error": "Please fill in every box"}), 400
+        if len(data["password"]) < 8:
+            return jsonify({"error": "Password must be at least 8 characters"}), 400
     password_hash = generate_password_hash(data["password"])
 
     connection = connect()
@@ -121,6 +132,7 @@ def signup():
 
 
 @app.route("/api/login", methods=["POST"])
+@limiter.limit("5 per minute")
 def login():
     data = request.get_json(silent=True)
     if not isinstance(data, dict):

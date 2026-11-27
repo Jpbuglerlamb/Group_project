@@ -467,6 +467,11 @@ form button {
 form button:hover {
     transform: scale(1.03);
 }
+.form-hint {
+    margin: 4px 0 10px;
+    font-size: 0.85rem;
+    color: #666;
+}
 
 /* the smaller "Add class" / "Add assessment" forms inside the planner.
    These come after the login form rules above, so they win where they differ. */
