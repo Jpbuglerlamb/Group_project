@@ -86,7 +86,14 @@ def home_page():
 
 @app.route("/api/signup", methods=["POST"])
 def signup():
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "Please fill in the form"}), 400
+
+    for field in ["username", "full_name", "phone", "email", "password"]:
+        value = data.get(field)
+        if not isinstance(value, str) or value.strip() == "":
+            return jsonify({"error": "Please fill in every box"}), 400
     password_hash = generate_password_hash(data["password"])
 
     connection = connect()
@@ -110,7 +117,15 @@ def signup():
 
 @app.route("/api/login", methods=["POST"])
 def login():
-    data = request.get_json()
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({"error": "Please type your username and password"}), 400
+
+    # every box must be filled in with text
+    for field in ["username", "password"]:
+        value = data.get(field)
+        if not isinstance(value, str) or value.strip() == "":
+            return jsonify({"error": "Please type your username and password"}), 400
 
     connection = connect()
     user = connection.execute(

@@ -13,7 +13,15 @@ loginForm.addEventListener("submit", async function (event) {
         })
     });
 
-    const result = await response.json();
+    // if the server crashed it sends an HTML error page, not JSON,
+    // so reading it as JSON fails: show a message instead of doing nothing
+    let result;
+    try {
+        result = await response.json();
+    } catch (error) {
+        loginMessage.textContent = "Something went wrong. Please try again in a minute.";
+        return;
+    }
 
     if (response.ok) {
         window.location.href = "home.html";

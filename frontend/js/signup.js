@@ -24,7 +24,13 @@ signupForm.addEventListener("submit", async function (event) {
         })
     });
 
-    const result = await response.json();
+    let result;
+    try {
+        result = await response.json();
+    } catch (error) {
+        signupMessage.textContent = "Something went wrong. Please try again in a minute.";
+        return;
+    }
 
     if (response.ok) {
         // the server has already logged the new user in
