@@ -6,9 +6,10 @@ from datetime import date
 from flask import Flask, jsonify, request, session, redirect
 from werkzeug.security import generate_password_hash, check_password_hash
 
-app = Flask(__name__, static_folder="../frontend", static_url_path="")
-app.secret_key = os.environ.get("SECRET_KEY", "dev-only-change-me")# reads backend/.env on your Mac; on Render the setting comes from the dashboard instead
 load_dotenv()
+
+app = Flask(__name__, static_folder="../frontend", static_url_path="")
+app.secret_key = os.environ["SECRET_KEY"]
 DATABASE_URL = os.environ["DATABASE_URL"]
 
 
