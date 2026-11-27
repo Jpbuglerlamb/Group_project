@@ -24,7 +24,30 @@ limiter = Limiter(get_remote_address, app=app, storage_uri="memory://")
 @app.errorhandler(429)
 def too_many_requests(error):
     return jsonify({"error": "Too many requests. Please wait a minute and try again"}), 429
+# security headers, added to every response the app sends
+@app.after_request
+def add_security_headers(response):
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self'; "
+        "style-src 'self' https://cdnjs.cloudflare.com; "
+        "font-src 'self' https://cdnjs.cloudflare.com; "
+        "img-src 'self' data:; "
+        "connect-src 'self'; "
+        "object-src 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'; "
+        "frame-ancestors 'none'"
+    )
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
 
+    # only on Render, which always uses https (your Mac uses plain http)
+    if os.environ.get("RENDER") is not None:
+        response.headers["Strict-Transport-Security"] = "max-age=31536000"
+
+    return response
 def connect():
     """Opens a connection to the Supabase database. Each row comes back as a dictionary."""
     return psycopg.connect(DATABASE_URL, row_factory=dict_row)
