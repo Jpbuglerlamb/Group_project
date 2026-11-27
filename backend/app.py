@@ -18,7 +18,7 @@ app.config["SESSION_COOKIE_SECURE"] = os.environ.get("RENDER") is not None
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=3)
 limiter = Limiter(get_remote_address, app=app, storage_uri="memory://")
 
 @app.errorhandler(429)
@@ -96,14 +96,7 @@ def home_page():
 # =========================
 # ACCOUNTS
 # =========================
-# TEMPORARY: shows what the server sees, remove after testing
-@app.route("/api/debug-ip")
-def debug_ip():
-    return jsonify({
-        "remote_addr": request.remote_addr,
-        "x_forwarded_for": request.headers.get("X-Forwarded-For"),
-        "worker_pid": os.getpid()
-    })
+
 @app.route("/api/signup", methods=["POST"])
 @limiter.limit("10 per hour")
 def signup():
