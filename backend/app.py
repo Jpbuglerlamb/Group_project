@@ -96,7 +96,14 @@ def home_page():
 # =========================
 # ACCOUNTS
 # =========================
-
+# TEMPORARY: shows what the server sees, remove after testing
+@app.route("/api/debug-ip")
+def debug_ip():
+    return jsonify({
+        "remote_addr": request.remote_addr,
+        "x_forwarded_for": request.headers.get("X-Forwarded-For"),
+        "worker_pid": os.getpid()
+    })
 @app.route("/api/signup", methods=["POST"])
 @limiter.limit("10 per hour")
 def signup():
