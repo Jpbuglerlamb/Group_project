@@ -412,7 +412,10 @@ addAssessmentForm.addEventListener("submit", async function (event) {
 
     const titleInput = document.getElementById("assessment-title");
     const dueInput = document.getElementById("assessment-due");
+    const submitButton = addAssessmentForm.querySelector("button[type=submit]");
+    submitButton.disabled = true;     // can't be pressed again while waiting
     const result = await api.addAssessment(currentClassId, titleInput.value.trim(), dueInput.value);
+    submitButton.disabled = false;    // answer received, so it can be used again
     if (!result.ok) {
         assessmentMessage.textContent = result.error;
         return;
