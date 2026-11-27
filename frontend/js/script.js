@@ -204,7 +204,10 @@ addClassForm.addEventListener("submit", async function (event) {
         return;
     }
     const nameInput = document.getElementById("class-name");
+    const submitButton = addClassForm.querySelector("button[type=submit]");
+    submitButton.disabled = true;
     const result = await api.addClass(nameInput.value.trim(), currentSemester);
+    submitButton.disabled = false;
     if (!result.ok) {
         classMessage.textContent = result.error;
         return;

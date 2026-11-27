@@ -472,6 +472,10 @@ form button:hover {
     font-size: 0.85rem;
     color: #666;
 }
+button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
 
 /* the smaller "Add class" / "Add assessment" forms inside the planner.
    These come after the login form rules above, so they win where they differ. */
