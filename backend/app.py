@@ -11,6 +11,10 @@ load_dotenv()
 app = Flask(__name__, static_folder="../frontend", static_url_path="")
 app.secret_key = os.environ["SECRET_KEY"]
 DATABASE_URL = os.environ["DATABASE_URL"]
+app.config["SESSION_COOKIE_SECURE"] = os.environ.get("RENDER") is not None
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["MAX_CONTENT_LENGTH"] = 16 * 1024
 
 
 def connect():
@@ -154,6 +158,9 @@ def me():
         (session["user_id"],)
     ).fetchone()
     connection.close()
+    if user is None:
+        session.clear()
+        return jsonify({"error": "You are not logged in"}), 401
 
     return jsonify({"username": user["username"], "full_name": user["full_name"]})
 
