@@ -18,7 +18,7 @@ app.config["SESSION_COOKIE_SECURE"] = os.environ.get("RENDER") is not None
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=2)
 limiter = Limiter(get_remote_address, app=app, storage_uri="memory://")
 
 @app.errorhandler(429)
